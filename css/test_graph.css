@@ -1,0 +1,216 @@
+body {
+    background-color: #fff;
+  }
+  
+  .container {
+    display: flex;
+    height: calc(100vh - 130px);
+    overflow: hidden;
+  }
+  
+  .panel {
+    width: 280px;
+    padding: 20px;
+    background: #f5f7fa;
+    border-right: 1px solid #e0e0e0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.03);
+    overflow-y: auto;
+  }
+  
+  .panel h4 {
+    margin: 20px 0 10px;
+    font-size: 15px;
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .panel label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+  }
+  
+  .panel > button {
+    padding: 10px;
+    border: none;
+    background-color: #005289;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+    width: 100%;
+    transition: background-color 0.25s ease;
+}
+
+  
+  .panel button:hover {
+    background-color: #003d66;
+  }
+  
+  .panel input,
+  .panel select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 6px;
+    width: 100%;
+  }
+  
+  #colorPanel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.color-choice {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: transparent;
+  padding: 0;
+  margin: 2px;
+}
+
+.main-button {
+  padding: 10px;
+  border: none;
+  background-color: #005289;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+  width: 100%;
+  transition: background-color 0.25s ease;
+}
+
+.main-button:hover {
+  background-color: #003d66;
+}
+
+
+  
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+  }
+  
+  #cy {
+    flex: 1;
+    height: 100%;
+    min-height: 600px;
+    background: #ffffff;
+  }
+  
+  .legend {
+    padding: 16px 20px;
+    background: #f5f7fa;
+    border-top: 1px solid #ddd;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  .legend div {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .legend span {
+    display: inline-block;
+    width: 18px;
+    height: 4px;
+  }
+  
+  #submitToProfBtn {
+    background-color: #1e7e34 !important;
+  }
+  
+  button.btn {
+    background-color: #6c757d;
+  }
+  .graph-intro {
+    background-color: #f0f2f5;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .graph-intro h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .graph-intro p {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .popup {
+    display: none;
+    position: absolute; 
+    transform: translate(-50%, -100%); 
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
+    z-index: 1000;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .popup .close {
+    float: right;
+    font-size: 18px;
+    color: #888;
+    cursor: pointer;
+  }
+  .popup .close:hover {
+    color: #000;
+  }
+  
+  .popup label {
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+  }
+  
+  .popup input {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .popup button {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: #58B19F;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  .popup button:hover {
+    background-color: #2e86c1;
+  }
+  

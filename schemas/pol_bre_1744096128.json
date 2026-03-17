@@ -1,0 +1,9 @@
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":"29","text":"pk lok","role":"Patron","age":"26","sector":"Non pr\u00e9cis\u00e9"},
+{"key":"49","text":"le pierre ","role":"manger","age":"35","sector":"communication","parent":"29"},
+{"key":"51","text":"retre lucas","role":"manager","age":"52","sector":"finance","parent":"29"},
+{"key":"52","text":"le eve","role":"RAS","age":"36","sector":"communication","parent":"49"},
+{"key":"53","text":"ler tony","role":"respo","age":"37","sector":"communication","parent":"49","extraFields":[{"label":"alliance","value":"pol"}]},
+{"key":"54","text":"po pool","role":"structurateur","age":"26","sector":"finance","parent":"51"}
+]}

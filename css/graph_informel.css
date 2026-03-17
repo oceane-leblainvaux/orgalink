@@ -1,0 +1,44 @@
+.panel {
+  width: 260px;
+  padding: 20px;
+  background: #f1f3f6;
+  border-right: 1px solid #ccc;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.panel h4 {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #333;
+}
+
+.panel label {
+  margin-top: 10px;
+  font-weight: bold;
+  display: block;
+  font-size: 13px;
+}
+
+.panel button {
+  padding: 6px 10px;
+  border: none;
+  background-color: #0074D9;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.panel button:hover {
+  background-color: #005fa3;
+}
+
+.panel input,
+.panel select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-top: 4px;
+}

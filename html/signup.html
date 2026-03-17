@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - ORFI</title>
+    <link rel="stylesheet" href="../css/signup.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="nav-container">
+            
+            <div class="sides">
+                <a href="../html/index.html" class="logo">ORFI</a>
+            </div>
+
+            <!-- Menu déroulant -->
+            <div class="sides">
+                <a href="#" class="menu" id="openMenu"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMULAIRE D'INSCRIPTION -->
+    <div class="signup-container">
+        <div class="signup-box">
+            <h2>Inscription</h2>
+
+            <form action="http://localhost/Projet/php/signup.php" method="POST">
+                <div class="input-group">
+                    <label for="firstname">Prénom</label>
+                    <input type="text" id="firstname" name="firstname" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="lastname">Nom</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="input-group password-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required>
+                    <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+                </div>
+
+                <div class="input-group password-group">
+                    <label for="confirm_password">Confirmer le mot de passe</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                    <span class="toggle-password" onclick="togglePassword('confirm_password')">👁</span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="role">Rôle</label>
+                    <select id="role" name="role" required>
+                        <option value="eleve">Élève</option> 
+                        <option value="prof">Professeur</option> 
+                    </select>
+                </div>
+                
+                <button type="submit" name="submit" class="btn">S'inscrire</button>
+
+                <p class="login-text">Déjà un compte ? <a href="../html/login.html">Se connecter</a></p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- MENU DÉROULANT -->
+    <dialog id="menuDialog">
+        <a href="../html/index.html">Accueil</a>
+        <a href="#">Tableau</a>
+        <a href="#">Organigramme</a>
+    </dialog>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 ORFI. Tous droits réservés.</p>
+            <nav>
+                <a href="#">À propos</a> |
+                <a href="#">Contact</a> |
+                <a href="#">Mentions légales</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="../js/signup.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Tableau des Acteurs</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+     <!-- HEADER -->
+     <div class="header">
+        <div class="sides">
+            <a href="../html/index.html" class="logo">ORFI</a>
+        </div>
+        <div class="sides">
+            <div id="authButtons" class="login-icon"></div>            
+        </div>
+        <div class="sides">
+            <a href="#" class="menu" id="openMenu"></a>
+        </div>
+    </div>
+
+    <!-- MENU DÉROULANT -->
+    <div id="menuDialog" class="custom-dialog">
+        <a href="../html/index.html">Accueil</a>
+        <a href="../html/dashboard.html">Tableau</a>
+        <a href="../html/organigramme.html">Organigramme</a>
+        <a href="../html/about.html">À propos</a>
+        <a href="../html/course.html">Sociologie des organisations</a>
+        <a href="../html/admin_view.html">Visualisation du graphique des élèves</a>
+    </div>
+
+    <div class="container">
+        <h2 class="mb-4">Tableau des Acteurs</h2>
+        <a class="btn btn-primary" href="create_acteur.html" role="button">Ajouter un Acteur</a>
+        
+        <div class="table-container">
+            <table class="table" id="table-acteurs">    
+                <thead>
+                    <tr>
+                        <th>ID Acteur</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Âge</th>
+                        <th>Rôle Entreprise</th>
+                        <th>Secteur</th>
+                        <th>ID du Supérieur</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <button class="btn btn-success btn-sm" onclick="window.location.href='organigramme.html';" role="button">
+            Générer l'Organigramme
+        </button>
+        
+    </div>
+     <!-- FOOTER -->
+     <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 ORFI.</p>
+            <nav>
+                <a href="../html/about.html">À propos</a> |
+                <a href="../html/course.html">Organisation Relationnelle</a> |
+                <a href="#">Contact</a>
+            </nav>
+        </div>
+    </footer>
+    <script src="../js/script.js"></script>
+    <script src="../js/dashboard_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":"36","text":"lek ioi","role":"manage","age":"21","sector":"finance","parent":"32"},
+{"key":"32","text":"lc new","role":"chil","age":"63","sector":"lio"},
+{"key":"46","text":"k l","role":"o","age":"5","sector":"m","parent":"39"},
+{"key":"39","text":"zsz szsz","role":"manage","age":"23","sector":"finance"}
+]}

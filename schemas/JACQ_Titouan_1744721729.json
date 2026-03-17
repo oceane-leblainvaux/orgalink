@@ -1,0 +1,10 @@
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":"70","text":"Pierre Jean","role":"Pdg","age":"54","sector":"Non pr\u00e9cis\u00e9"},
+{"key":"71","text":"Jc Paul","role":"Manager","age":"24","sector":"Vente","parent":"70"},
+{"key":"72","text":"Dejong Clem","role":"Manager","age":"54","sector":"Informatique","parent":"70"},
+{"key":"73","text":"asd az","role":"Technicien","age":"54","sector":"Vente","parent":"71"},
+{"key":"74","text":"rth tyh","role":"Technicien","age":"24","sector":"Vente","parent":"71"},
+{"key":"75","text":"tyj tyj","role":"Technicien","age":"24","sector":"informatique","parent":"72"},
+{"key":"76","text":"df zef","role":"Technicien","age":"45","sector":"informatique","parent":"72"}
+]}

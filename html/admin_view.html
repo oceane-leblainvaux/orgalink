@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Visualisation des Schémas - ORFI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/gojs/release/go.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin_view.css">
+
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="sides">
+      <a href="../html/index.html" class="logo">ORFI</a>
+    </div>
+    <div class="sides">
+      <div id="authButtons" class="login-icon"></div>
+    </div>
+    <div class="sides">
+      <a href="#" class="menu" id="openMenu"></a>
+    </div>
+  </div>
+
+  <!-- MENU DÉROULANT -->
+  <div id="menuDialog" class="custom-dialog">
+    <a href="../html/index.html">Accueil</a>
+    <a href="../html/dashboard.html">Tableau</a>
+    <a href="../html/organigramme.html">Organigramme</a>
+    <a href="../html/about.html">À propos</a>
+    <a href="../html/course.html">Sociologie des organisations</a>
+    <a href="../html/admin_view.html">Visualisation du graphique des élèves</a>
+  </div>
+
+  <!-- CONTENU -->
+  <div class="container">
+    <h2>Liste des Organigrammes Enregistrés</h2>
+
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Télécharger</th>
+            <th>Voir</th>
+            <th>Supprimer</th>
+          </tr>
+        </thead>
+        <tbody id="schemaList">
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 ORFI.</p>
+      <nav>
+        <a href="../html/about.html">À propos</a> |
+        <a href="../html/course.html">Organisation Relationnelle</a> |
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="../js/script.js"></script>
+  <script src="../js/admin_view.js"></script>
+
+</body>
+
+</html>

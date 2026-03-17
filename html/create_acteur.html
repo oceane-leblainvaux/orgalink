@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Acteur</title>
+    <link rel="stylesheet" href="../css/create_acteur.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Ajouter un Acteur</h2>
+        <form id="create-acteur-form">
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom</label>
+                <input type="text" class="form-control" id="nom" name="nom">
+            </div>
+            <div class="mb-3">
+                <label for="prenom" class="form-label">Prénom</label>
+                <input type="text" class="form-control" id="prenom" name="prenom">
+            </div>
+            <div class="mb-3">
+                <label for="age" class="form-label">Âge</label>
+                <input type="number" class="form-control" id="age" name="age">
+            </div>
+            <div class="mb-3">
+                <label for="role_entreprise" class="form-label">Rôle Entreprise</label>
+                <input type="text" class="form-control" id="role_entreprise" name="role_entreprise">
+            </div>
+            <div class="mb-3">
+                <label for="secteur" class="form-label">Secteur</label>
+                <input type="text" class="form-control" id="secteur" name="secteur">
+            </div>
+            <div class="mb-3">
+                <label for="id_superieur" class="form-label">ID du Supérieur (laisser vide si PDG)</label>
+                <input type="number" class="form-control" id="id_superieur" name="id_superieur" placeholder="ex : 3">
+            </div>
+            
+            
+            <button type="submit" class="btn btn-primary">Ajouter</button>    
+        </form>
+    </div>
+
+    <script src="../js/dashboard_script.js"></script>
+</body>
+</html>

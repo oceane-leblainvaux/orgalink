@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiche Acteur</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/fiche_acteur.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .radar-legend {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .legend-item {
+      display: inline-block;
+      margin: 0 12px;
+      font-weight: bold;
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .dot-positive { background-color: #4caf50; }
+    .dot-negative { background-color: #f44336; }
+    .dot-neutral  { background-color: #c2ef1e; }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="sides">
+        <a href="../html/index.html" class="logo">ORFI</a>
+    </div>
+    <div class="sides">
+        <div id="authButtons" class="login-icon"></div>            
+    </div>
+    <div class="sides">
+        <a href="#" class="menu" id="openMenu"></a>
+    </div>
+</div>
+
+<!-- MENU DÉROULANT -->
+<div id="menuDialog" class="custom-dialog">
+  <a href="../html/index.html">Accueil</a>
+  <a href="../html/dashboard.html">Tableau</a>
+  <a href="../html/organigramme.html">Organigramme</a>
+  <a href="../html/about.html">À propos</a>
+  <a href="../html/course.html">Sociologie des organisations</a>
+  <a href="../html/admin_view.html">Visualisation du graphique des élèves</a>
+  <a href="../html/test_graph.html">Graphique informel</a>
+</div>
+
+  <div class="section">
+    <h2>Sélectionnez un acteur :</h2>
+    <select id="selectActeur">
+      <option value="">-- Choisissez un acteur --</option>
+    </select>
+  </div>
+
+  <div id="ficheContainer" style="display:none">
+    <h1>Fiche de l'acteur : <span id="acteurNom">[Nom]</span></h1>
+
+    <div class="section">
+      <h2>Radar des Relations Informelles</h2>
+      <canvas id="radarChart" width="600" height="400"></canvas>
+
+    
+      <div class="radar-legend">
+        <div class="legend-item"><span class="legend-dot dot-positive"></span>Positive</div>
+        <div class="legend-item"><span class="legend-dot dot-negative"></span>Négative</div>
+        <div class="legend-item"><span class="legend-dot dot-neutral"></span>Neutre</div>
+        <br><br>
+        <div><strong>Radar :</strong> Relations informelles en lien avec l'acteur sélectionné, avec couleur selon la nature et longueur des segments selon intensité (+++ et --- -> longueur de 3...)  .</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2> Détails des Relations</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Relation avec</th>
+            <th>Type</th>
+            <th>Nature</th>
+            <th>Impact (→)</th>
+            <th>Impact (←)</th>
+            <th>Durée (mois)</th>
+          </tr>
+        </thead>
+        <tbody id="tableRelations"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+        <p>&copy; 2025 ORFI.</p>
+        <nav>
+            <a href="../html/about.html">À propos</a> |
+            <a href="../html/course.html">Organisation Relationnelle</a> |
+            <a href="#">Contact</a>
+        </nav>
+    </div>
+</footer>
+
+
+
+<script src="../js/fiche_acteur.js"></script>
+<script src="../js/script.js"></script>
+
+</body>
+</html>

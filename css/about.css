@@ -1,0 +1,46 @@
+
+.about-content {
+    width: 80%;
+    max-width: 900px;
+    background: rgba(27, 32, 48, 0.95);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+    margin: 50px auto;
+    text-align: justify;
+}
+
+.about-content h1 {
+    text-align: center;
+    color: #71aff6;
+    margin-bottom: 20px;
+}
+
+.about-content p, 
+.about-content ul {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #ccc;
+}
+
+.about-content ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.about-content ul li {
+    padding-left: 30px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.about-content ul li:before {
+    content: "✔";
+    color: #71aff6;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}

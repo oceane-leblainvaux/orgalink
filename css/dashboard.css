@@ -1,0 +1,151 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(27,32,48,1)), 
+                url('https://thrivenextgen.com/wp-content/uploads/AdobeStock_162765779_45-scaled.webp') 
+                no-repeat center center/cover;
+    background-attachment: fixed; 
+    background-size: cover;
+    padding-bottom: 100px; 
+}
+
+
+.container {
+    background: rgba(27, 32, 48, 0.95);
+    padding: 40px;
+    padding-bottom: 80px; 
+    border-radius: 15px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+    margin: 60px auto;
+    text-align: center;
+    color: white;
+    width: 90%;
+    max-width: 1200px;
+}
+
+
+
+h2 {
+    text-align: center;
+    color: #71aff6;
+    margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.table {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.table thead {
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.table th {
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.table tbody tr {
+    transition: background 0.3s ease-in-out;
+}
+
+.table tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.table td {
+    padding: 14px;
+    text-align: center;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transition: background 0.3s ease-in-out;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    font-size: 15px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #71aff6;
+    border: none;
+    transition: background 0.3s ease-in-out, transform 0.2s;
+}
+
+.btn-primary:hover {
+    background: #5095e2;
+    transform: scale(1.05);
+}
+
+.btn-success {
+    background: #2ecc71;
+    border: none;
+    margin-top: 25px;
+    padding: 12px 18px;
+    font-size: 16px;
+    transition: background 0.3s ease-in-out, transform 0.2s;
+}
+
+.btn-success:hover {
+    background: #27ae60;
+    transform: scale(1.05);
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 10px;
+    scrollbar-width: thin;
+}
+
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+.table-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.table-container::-webkit-scrollbar-thumb {
+    background-color: rgba(113, 175, 246, 0.8);
+    border-radius: 10px;
+}

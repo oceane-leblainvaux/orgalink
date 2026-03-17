@@ -1,0 +1,9 @@
+{ "class": "TreeModel",
+  "nodeDataArray": [
+{"key":"58","text":"Dan G\u00e9rard","role":"Pdg","age":"68","sector":"Non pr\u00e9cis\u00e9","extraFields":[{"label":"aazd","value":"qsd"}]},
+{"key":"65","text":"Bap Jean","role":"Manager","age":"21","sector":"informatique","parent":"58"},
+{"key":"66","text":"LC Clem","role":"Manager","age":"58","sector":"Marketing","parent":"58"},
+{"key":"67","text":"f AZe","role":"Technicien","age":"25","sector":"informatique","parent":"65"},
+{"key":"68","text":"zef zef","role":"Technicien","age":"42","sector":"informatique","parent":"65"},
+{"key":"69","text":"dr gfj","role":"Technicien","age":"86","sector":"Marketing","parent":"66"}
+]}
