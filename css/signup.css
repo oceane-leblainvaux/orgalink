@@ -11,9 +11,9 @@ body {
     justify-content: space-between;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(27,32,48,1)), 
-                url('https://thrivenextgen.com/wp-content/uploads/AdobeStock_162765779_45-scaled.webp') 
-                no-repeat center center/cover;
+    background-image: url('../image/image_fond.png');
+    background-repeat: no-repeat; 
+    background-size: cover;
 }
 
 .signup-container {
@@ -123,6 +123,16 @@ footer {
     justify-content: center;
     margin-top: auto;
 }
+footer a {
+    color: #ffffff; /* Définit la couleur en blanc */
+    text-decoration: none; /* Optionnel : enlève le soulignement */
+    margin: 0 5px; /* Optionnel : ajoute un petit espace autour des liens */
+}
+
+footer a:hover {
+    text-decoration: underline; /* Optionnel : souligne au survol pour l'ergonomie */
+    color: #8A2BE2; /* Optionnel : rappelle le violet de votre menu au survol */
+}
 .header {
     display: flex;
     align-items: center;
@@ -131,6 +141,25 @@ footer {
     background: #1B2030;
     color: #eee;
     width: 100%;
+}
+.header-nav {
+display: flex;
+gap: 30px; /* Espace généreux entre les menus */
+list-style: none;
+}
+
+.header-nav a {
+color: #FFFFFF; /* Écrit en BLANC pur */
+text-decoration: none;
+font-weight: 600;
+font-size: 1rem;
+text-transform: uppercase; /* Optionnel : pour un look plus pro */
+transition: color 0.3s ease, transform 0.2s;
+}
+
+.header-nav a:hover {
+color: #8A2BE2; /* Change en violet au survol */
+transform: translateY(-2px); /* Petit effet de saut au survol */
 }
 
 .nav-container {
