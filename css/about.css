@@ -14,9 +14,7 @@
     flex-direction : column;
 }
 .about-content img {
-    display: block;
-    margin: 20px auto;
-    width: 200px; /* ajuste la taille */
+      /* règle générale supprimée ou vidée */
 }
 body {
     display: flex;
@@ -63,10 +61,10 @@ body {
 
 .team-images {
     display: flex;
-    justify-content: space-between; /* une à gauche, une à droite */
+    justify-content: center; /* une à gauche, une à droite */
     align-items: center;
     margin: 30px 0;
-    gap : 40px;
+    gap : 80px;
 }
 
 .team-images img {
