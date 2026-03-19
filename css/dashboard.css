@@ -9,12 +9,12 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-image: url('../image/fond.png');
+    background-image: url('../image/image_fond.png');
     background-attachment: fixed; 
     background-size: cover;
     margin : 0; 
 }
-
+ 
 
 .container {
     background: rgba(27, 32, 48, 0.95);
@@ -34,7 +34,7 @@ body {
 
 h2.mb-4{
     text-align: center;
-    color: #2d3748;
+    color:  #d38f4f !important;
     margin-bottom: 25px;
     font-size: 28px;
     font-weight: 700;
