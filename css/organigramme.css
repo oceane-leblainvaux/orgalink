@@ -1,5 +1,5 @@
 body.org-background {
-    background: url('https://thrivenextgen.com/wp-content/uploads/AdobeStock_162765779_45-scaled.webp') no-repeat center center/cover;
+    background: url('../image/image_fond.png');
     background-attachment: fixed;
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -7,7 +7,7 @@ body.org-background {
   }
   
   .org-title {
-    color: white;
+    color: #d38f4f;
     text-align: center;
     margin: 60px auto 30px;
     font-size: 2.2em;
