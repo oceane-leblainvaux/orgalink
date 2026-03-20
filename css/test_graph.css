@@ -1,7 +1,14 @@
-body {
-    background-color: #fff;
-  }
-  
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: "Montserrat", sans-serif;
+    background-image: url('../image/image_fond.png');
+    background-repeat: no-repeat; 
+    background-size: cover;     
+}
   .container {
     display: flex;
     height: calc(100vh - 130px);
@@ -58,6 +65,7 @@ body {
     font-size: 13px;
     margin-top: 6px;
     width: 100%;
+    box-sizing: border-box;
   }
   
   #colorPanel {
