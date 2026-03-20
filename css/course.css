@@ -1,7 +1,7 @@
 html, body {
     height: 100%;
     width: 100%;
-    background: url('../image/fond.png');
+    background: url('../image/image_fond.png');
     background-size: cover;
     background-attachment: fixed;
 }
@@ -21,7 +21,7 @@ html, body {
 
 .course-content h2, 
 .course-content h3 {
-    color: #71aff6;
+    color: #c08951 ! important;
     text-align: center;
     margin-bottom: 15px;
     text-transform: uppercase;
