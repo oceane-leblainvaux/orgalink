@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (authContainer) {
         if (userId) {
             authContainer.innerHTML = `
-                <span style="color:white; margin-right:10px;">Bjr ${prenom}</span>
+                <span style="color:white; margin-right:10px;">Bonjour ${prenom}</span>
                 <button id="logoutBtn" style="background:none; border:none; cursor:pointer; color:white; font-size:16px;">
                     Se déconnecter
                 </button>
