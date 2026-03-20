@@ -1,10 +1,13 @@
 body.org-background {
-    background: url('../image/image_fond.png');
-    background-attachment: fixed;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-  }
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: url('../image/image_fond.png');
+    background-attachment: fixed; 
+    background-size: cover;
+    margin : 0; 
+}
+  
   
   .org-title {
     color: #d38f4f;
