@@ -1,0 +1,7 @@
+Array
+(
+    [id_utilisateur] => 18
+    [nom] => tata
+    [prenom] => tutu
+    [role] => prof
+)
