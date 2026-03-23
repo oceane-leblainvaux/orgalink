@@ -8,158 +8,128 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/test_graph.css">
 </head>
-
+ 
 <body>
   <!-- HEADER -->
   <div class="header">
-  
-    <div class="sides">
-        <div id="authButtons" class="login-icon"></div>            
-    </div>
-    <div class="sides">
-        <a href="#" class="menu" id="openMenu"></a>
-    </div>
-</div>
-
-
-<div class="header">
-        <div class="sides">
-            <div id="authButtons" class="login-icon"></div>            
-        </div>
-        <nav class="header-nav">
-            <a href="../html/index.html">Accueil</a>
-            <a href="../html/dashboard.html">Tableau</a>
-            <a href="../html/organigramme.html">Organigramme formel</a>
-            <a href="../html/admin_view.html">Listes de graphiques</a>
-            <a href="../html/test_graph.html">Graphique informel</a>
-        </nav>
-    </div>
-
-
-<header class="graph-intro">
-  <h1>Création du Graphe Informel</h1>
-  <p>Visualisez et saisissez les relations informelles entre les acteurs</p>
-</header>
-
-  
-<div class="container">
-  <div class="panel">
-    <button id="linkSimpleBtn" class="main-button">→ Flèche simple</button>
-    <button id="linkDoubleBtn" class="main-button">↔ Flèche double sens</button>
-    <button id="deleteSelectedBtn" class="main-button">Supprimer sélection</button>
-
-    <label>Couleur des acteurs selon leurs secteurs:</label>
-    <div id="colorPanel"></div>
-
-    <hr>
-    <h4>Zones d'ambiance</h4>
-    <div style="display:flex;gap: 10px;margin-top: 8px;">
-      <button class="main-button" onclick="creerZoneContour('alliance')">Créer Zone Alliance +++</button>
-    <button class="main-button" onclick="creerZoneContour('tension')">Créer Zone Tension ---</button>
-    </div>
-    
-    <button onclick="supprimerZoneContour()"> Supprimer une zone sélectionnée</button>
-
-   
-
-
-    <hr>
-    <h4>Enregistrement / Envoi du graphique</h4>
-    <div style="display: flex; gap: 10px; margin-top: 8px;">
-      <button id="saveGraphBtn" class="main-button" style="flex: 1;">Enregistrer</button>
-      <button id="submitToProfBtn" class="main-button" style="flex: 1; background-color: #28a745;">Envoyer au Prof</button>
-    </div>
-    <hr>
-    <h4>Fiche acteur</h4>
-    <button class="main-button" onclick="window.location.href='../html/fiche_acteur.html'" style="margin-top: 10px; background-color: #6c757d;">Fiche récapitulative</button>
-   
-    <hr>
-    <h4 style="cursor: pointer;" onclick="toggleInstructions()"> Mode d’emploi ▼</h4>
-    <div id="instructions" style="font-size: 13px; line-height: 1.4;">
-      <strong>- Pour créer une relation :</strong><br>
-      - Cliquez sur → Flèche simple ou ↔ Flèche double<br>
-      - Sélectionnez 2 acteurs dans le graphe<br>
-      - Complétez les informations dans le formulaire<br>
-      
-
-      <strong>- Pour créer une zone (alliance/tension) :</strong><br>
-      &nbsp;&nbsp;&nbsp;- Cliquez sur un acteur<br>
-      &nbsp;&nbsp;&nbsp;- Maintenez la touche Ctrl (ou Cmd sur Mac)<br>
-      &nbsp;&nbsp;&nbsp;- Cliquez sur les autres acteurs à inclure<br>
-      - Cliquez sur “Créer Zone Alliance +++” ou “Créer Zone Tension ---” pour encadrer les acteurs sélectionnés<br><br>
-
-      <strong>- Pour supprimer une zone :</strong><br>
-      &nbsp;&nbsp;&nbsp;- Cliquez sur le cadre de la zone<br>
-      &nbsp;&nbsp;&nbsp;- Puis cliquez sur “Supprimer une zone sélectionnée”<br><br>
-
-      <strong> Pour plus de visibilité </strong><br>
-      - N'hésitez pas à déplacer les acteurs sur le graphiques car certaines relations peuvent se marcher dessus<br><br>
-      <strong> Graphique terminé ?</strong><br>
-      - Cliquer sur Enregistrer pour sauvegarder votre graphique et les relations créées<br>
-      - Cliquer sur envoyer au prof pour rendre votre travail<br>
-      - Une fois le graphe enregistré, vous pouvez en cliquant sur le bouton fiche acteur, vous rendre sur une page pour voir en détails les relations informelles de chaque acteur sous forme de radar/tableau
-      
-    </div>
-
-    
+      <nav class="header-nav">
+          <a href="../html/index.html">Accueil</a>
+          <a href="../html/dashboard.html">Tableau</a>
+          <a href="../html/organigramme.html">Organigramme formel</a>
+          <a href="../html/admin_view.html">Listes de graphiques</a>
+          <a href="../html/test_graph.html">Graphique informel</a>
+      </nav>
   </div>
-
-  <div class="main">
-    <div id="cy"></div>
-
-    <div class="legend">
-      <h4 style="margin-bottom: 6px;">Légende</h4>
-    
-      <div style="display: flex; justify-content: space-between; gap: 30px; flex-wrap: wrap;">
-        
-        <div style="flex: 1; min-width: 60px;">
-          <strong>Nature :</strong><br>
-          <div><span style="display:inline-block;width:18px;height:4px;background:#2ecc71;margin-right:5px;"></span> Positive</div>
-          <div><span style="display:inline-block;width:18px;height:4px;background:#e74c3c;margin-right:5px;"></span> Négative</div>
-          <div><span style="display:inline-block;width:18px;height:4px;background:#95a5a6;margin-right:5px;"></span> Neutre</div>
-        </div>
-    
-        <div style="flex: 1; min-width: 120px;">
-          <strong>Impact :</strong><br>
-          <div><span style="display:inline-block;width:18px;height:2px;border-top:1px dotted black;margin-right:5px;"></span> Faible</div>
-          <div><span style="display:inline-block;width:18px;height:4px;border-top:2px solid black;margin-right:5px;"></span> Moyen</div>
-          <div><span style="display:inline-block;width:18px;height:6px;border-top:3px solid black;margin-right:5px;"></span> Fort</div>
-        </div>
-    
+ 
+  <header class="graph-intro">
+    <h1>Création du Graphe Informel</h1>
+    <p>Visualisez et saisissez les relations informelles entre les acteurs</p>
+  </header>
+ 
+  <div class="container">
+    <div class="panel">
+      <button id="linkSimpleBtn" class="main-button">→ Flèche simple</button>
+      <button id="linkDoubleBtn" class="main-button">↔ Flèche double sens</button>
+      <button id="deleteSelectedBtn" class="main-button">Supprimer sélection</button>
+ 
+      <label>Couleur des acteurs selon leurs secteurs:</label>
+      <div id="colorPanel"></div>
+ 
+      <hr>
+      <h4>Zones d'ambiance</h4>
+      <div style="display:flex;gap: 10px;margin-top: 8px;">
+        <button class="main-button" onclick="creerZoneContour('alliance')">Créer Zone Alliance +++</button>
+        <button class="main-button" onclick="creerZoneContour('tension')">Créer Zone Tension ---</button>
+      </div>
+      
+      <button onclick="supprimerZoneContour()"> Supprimer une zone sélectionnée</button>
+ 
+      <hr>
+      <h4>Enregistrement / Envoi du graphique</h4>
+      <div style="display: flex; gap: 10px; margin-top: 8px;">
+        <button id="saveGraphBtn" class="main-button" style="flex: 1;">Enregistrer</button>
+        <button id="submitToProfBtn" class="main-button" style="flex: 1; background-color: #28a745;">Envoyer au Prof</button>
+      </div>
+      <hr>
+      <h4>Fiche acteur</h4>
+      <button class="main-button" onclick="window.location.href='../html/fiche_acteur.html'" style="margin-top: 10px; background-color: #6c757d;">Fiche récapitulative</button>
+     
+      <hr>
+      <h4 style="cursor: pointer;" onclick="toggleInstructions()"> Mode d'emploi ▼</h4>
+      <div id="instructions" style="font-size: 13px; line-height: 1.4;">
+        <strong>- Pour créer une relation :</strong><br>
+        - Cliquez sur → Flèche simple ou ↔ Flèche double<br>
+        - Sélectionnez 2 acteurs dans le graphe<br>
+        - Complétez les informations dans le formulaire<br>
+ 
+        <strong>- Pour créer une zone (alliance/tension) :</strong><br>
+        &nbsp;&nbsp;&nbsp;- Cliquez sur un acteur<br>
+        &nbsp;&nbsp;&nbsp;- Maintenez la touche Ctrl (ou Cmd sur Mac)<br>
+        &nbsp;&nbsp;&nbsp;- Cliquez sur les autres acteurs à inclure<br>
+        - Cliquez sur "Créer Zone Alliance +++" ou "Créer Zone Tension ---" pour encadrer les acteurs sélectionnés<br><br>
+ 
+        <strong>- Pour supprimer une zone :</strong><br>
+        &nbsp;&nbsp;&nbsp;- Cliquez sur le cadre de la zone<br>
+        &nbsp;&nbsp;&nbsp;- Puis cliquez sur "Supprimer une zone sélectionnée"<br><br>
+ 
+        <strong> Pour plus de visibilité </strong><br>
+        - N'hésitez pas à déplacer les acteurs sur le graphiques car certaines relations peuvent se marcher dessus<br><br>
+        <strong> Graphique terminé ?</strong><br>
+        - Cliquer sur Enregistrer pour sauvegarder votre graphique et les relations créées<br>
+        - Cliquer sur envoyer au prof pour rendre votre travail<br>
+        - Une fois le graphe enregistré, vous pouvez en cliquant sur le bouton fiche acteur, vous rendre sur une page pour voir en détails les relations informelles de chaque acteur sous forme de radar/tableau
       </div>
     </div>
-    
-  </div>
-</div>
-<!-- FOOTER -->
-    <footer>
-        <div class="footer-content">
-            <p>&copy; 2026 Orgalink.Tous droits réservés.</p>
-            <nav>
-                <a href="../html/about.html">À propos de nous</a> |
-                <a href="#">Mentions Légales</a> |
-                <a href="../html/contact.html">Contact</a>
-            </nav>
+ 
+    <div class="main">
+      <div id="cy"></div>
+ 
+      <div class="legend">
+        <h4 style="margin-bottom: 6px;">Légende</h4>
+      
+        <div style="display: flex; justify-content: space-between; gap: 30px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 60px;">
+            <strong>Nature :</strong><br>
+            <div><span style="display:inline-block;width:18px;height:4px;background:#2ecc71;margin-right:5px;"></span> Positive</div>
+            <div><span style="display:inline-block;width:18px;height:4px;background:#e74c3c;margin-right:5px;"></span> Négative</div>
+            <div><span style="display:inline-block;width:18px;height:4px;background:#95a5a6;margin-right:5px;"></span> Neutre</div>
+          </div>
+      
+          <div style="flex: 1; min-width: 120px;">
+            <strong>Impact :</strong><br>
+            <div><span style="display:inline-block;width:18px;height:2px;border-top:1px dotted black;margin-right:5px;"></span> Faible</div>
+            <div><span style="display:inline-block;width:18px;height:4px;border-top:2px solid black;margin-right:5px;"></span> Moyen</div>
+            <div><span style="display:inline-block;width:18px;height:6px;border-top:3px solid black;margin-right:5px;"></span> Fort</div>
+          </div>
         </div>
-    </footer>
-    
-    
-    
-
-
-<script src="../js/test_graph.js"></script>
-<script>
-  function toggleInstructions() {
-    const el = document.getElementById("instructions");
-    const isVisible = el.style.display !== "none";
-    el.style.display = isVisible ? "none" : "block";
-
-    const title = document.querySelector("h4[onclick='toggleInstructions()']");
-    title.innerHTML = isVisible ? "📘 Mode d’emploi ▶" : "📘 Mode d’emploi ▼";
-  }
-</script>
-<script src="../js/script.js"></script>
-
+      </div>
+    </div>
+  </div>
+ 
+  <!-- FOOTER -->
+  <footer>
+      <div class="footer-content">
+          <p>&copy; 2026 Orgalink. Tous droits réservés.</p>
+          <nav>
+              <a href="../html/about.html">À propos de nous</a> |
+              <a href="#">Mentions Légales</a> |
+              <a href="../html/contact.html">Contact</a>
+          </nav>
+      </div>
+  </footer>
+ 
+  <script src="../js/test_graph.js"></script>
+  <script>
+    function toggleInstructions() {
+      const el = document.getElementById("instructions");
+      const isVisible = el.style.display !== "none";
+      el.style.display = isVisible ? "none" : "block";
+ 
+      const title = document.querySelector("h4[onclick='toggleInstructions()']");
+      title.innerHTML = isVisible ? "📘 Mode d'emploi ▶" : "📘 Mode d'emploi ▼";
+    }
+  </script>
+  <script src="../js/script.js"></script>
+ 
 </body>
 </html>
-  
