@@ -6,9 +6,10 @@
     <title>Dashboard - Tableau des Acteurs</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
+ 
     <div class="header">
         <div class="sides">
             <div id="authButtons" class="login-icon"></div>            
@@ -21,35 +22,53 @@
             <a href="../html/test_graph.html">Graphique informel</a>
         </nav>
     </div>
-
-    <div class="container">
-        <h2 class="mb-4">Tableau des Acteurs</h2>
-        <a class="btn btn-primary" href="create_acteur.html" role="button">Ajouter un Acteur</a>
-        
-        <div class="table-container">
-            <table class="table" id="table-acteurs">    
-                <thead>
-                    <tr>
-                        <th>ID Acteur</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Âge</th>
-                        <th>Rôle Entreprise</th>
-                        <th>Secteur</th>
-                        <th>ID du Supérieur</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
+ 
+    <div class="page-wrapper">
+        <div class="container">
+ 
+            <!-- TITRE + BOUTON AIDE -->
+            <div class="title-row">
+                <h2 class="mb-4">Tableau des Acteurs</h2>
+                <span class="aide-bubble">
+                    <span class="aide-bubble-icon">💡 Un peu d'aide ?</span>
+                    <span class="aide-tooltip">
+                        <strong>Consignes de saisie</strong>
+                        <div class="aide-step"><span class="aide-num">1</span> Commencez par le dirigeant principal en premier.</div>
+                        <div class="aide-step"><span class="aide-num">2</span> Notez son ID Acteur avant de créer les suivants.</div>
+                        <div class="aide-step"><span class="aide-num">3</span> Pour chaque acteur, renseignez l'ID acteur de leur supéreur précedemment récupéré.</div>
+                        <div class="aide-step"><span class="aide-num">4</span> Puis descendez dans la hiérarchie niveau par niveau.</div>
+                    </span>
+                </span>
+            </div>
+ 
+            <a class="btn btn-primary" href="create_acteur.html" role="button">
+                <span>＋</span> Ajouter un Acteur
+            </a>
+            
+            <div class="table-container">
+                <table class="table" id="table-acteurs">    
+                    <thead>
+                        <tr>
+                            <th>ID Acteur</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Âge</th>
+                            <th>Rôle Entreprise</th>
+                            <th>Secteur</th>
+                            <th>ID du Supérieur</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+ 
+            <button class="btn btn-success" onclick="window.location.href='organigramme.html';" role="button">
+                Générer l'Organigramme
+            </button>
         </div>
-
-        <button class="btn btn-success btn-sm" onclick="window.location.href='organigramme.html';" role="button">
-            Générer l'Organigramme
-        </button>
     </div>
-
+ 
     <footer>
         <div class="footer-content">
             <p>&copy; 2026 Orgalink. Tous droits réservés.</p>
@@ -65,7 +84,3 @@
     <script src="../js/dashboard_script.js"></script>
 </body>
 </html>
-
-
-
- 

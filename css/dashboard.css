@@ -4,131 +4,203 @@
     box-sizing: border-box;
     font-family: "Montserrat", sans-serif;
 }
-
+ 
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     background-image: url('../image/image_fond.png');
-    background-attachment: fixed; 
+    background-attachment: fixed;
     background-size: cover;
-    margin : 0; 
+    margin: 0;
 }
  
-
+/* ===== PAGE WRAPPER ===== */
+.page-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+ 
+/* ===== CONTAINER TABLEAU ===== */
 .container {
-    background: rgba(27, 32, 48, 0.95);
-    padding: 30px;
-    padding-bottom: 80px; 
-    border-radius: 12px;
+    background: rgba(20, 24, 40, 0.97);
+    padding: 32px 30px 40px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.07);
     backdrop-filter: blur(12px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    margin: 40px auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     text-align: center;
     color: white;
     width: 95%;
     max-width: 1200px;
+    animation: fadeUp 0.5s ease both;
 }
-
-
-
-h2.mb-4{
-    text-align: center;
-    color:  #d38f4f !important;
-    margin-bottom: 25px;
-    font-size: 28px;
+ 
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+ 
+/* ===== TITRE + BOUTON AIDE CÔTE À CÔTE ===== */
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+ 
+h2.mb-4 {
+    color: #ffffff;
+    font-size: 26px;
     font-weight: 700;
-}
-
-.table {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-}
-
-.table-container {
-    overflow-x: auto; /* Scroll si trop large sur mobile */
-    margin-top: 10px;
-}
-
-.table thead th {
-    background-color: #f8fafc;
-    color: #64748b;
+    font-family: "Rajdhani", sans-serif;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    padding: 15px;
-    border-bottom: 2px solid #edf2f7;
-    text-align: left;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 0;
 }
-
-.table th {
-    padding: 15px;
-    text-align: center;
-    font-weight: bold;
+ 
+h2.mb-4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;             
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffffff, transparent);
+    border-radius: 2px;
 }
-
-.table tbody tr {
-    transition: background 0.3s ease-in-out;
+.title-row .aide-bubble {
+    grid-column: 3;
+    justify-self: end;
 }
-
-.table tbody tr:nth-child(odd) {
-    background-color: rgba(255, 255, 255, 0.08);
+ 
+/* ===== BOUTON AIDE ===== */
+.aide-bubble {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 16px;
+    background: rgba(211, 143, 79, 0.15);
+    border: 1.5px solid rgba(211, 143, 79, 0.55);
+    border-radius: 25px;
+    cursor: help;
+    position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
-
-.table tbody tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.12);
+ 
+.aide-bubble:hover {
+    background: rgba(211, 143, 79, 0.28);
+    border-color: #d38f4f;
 }
-
-.table td {
-    padding: 14px;
-    text-align: center;
-    font-size: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.table tbody tr:hover {
-   background-color: #f1f5f9;
-}
-
-.btn {
-    padding: 10px 20px;
-    border-radius: 8px;
+ 
+.aide-bubble-icon {
+    color: #d38f4f;
+    font-size: 13px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    user-select: none;
+}
+ 
+/* ===== TOOLTIP ===== */
+.aide-tooltip {
+    visibility: hidden !important;
+    opacity: 0;
+    width: 340px;
+    background: rgba(12, 14, 28, 0.99);
+    color: #e8e8f0;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 10px;
+    padding: 16px 18px;
+    border: 1px solid rgba(211, 143, 79, 0.4);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+    position: absolute;
+    top: calc(100% + 14px);
+    right: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+    z-index: 9999;
+    text-align: left;
+    text-shadow: none !important;
+    pointer-events: none;
+    white-space: normal;
+}
+ 
+.aide-tooltip strong {
+    display: block;
+    color: #d38f4f;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(211, 143, 79, 0.25);
+}
+ 
+.aide-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: 24px;
+    border: 7px solid transparent;
+    border-bottom-color: rgba(211, 143, 79, 0.4);
+}
+ 
+.aide-bubble:hover .aide-tooltip {
+    visibility: visible !important;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
+}
+ 
+.aide-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+}
+ 
+.aide-step:last-child { margin-bottom: 0; }
+ 
+.aide-step strong {
+    display: inline;
+    color: #e8b87a;
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
     border: none;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    margin-bottom: 20px;
+    padding: 0;
+    margin: 0;
 }
-
-.btn-primary {
-    background-color: #4a90e2;
-    color: white;
+ 
+.aide-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    background: rgba(211, 143, 79, 0.2);
+    border: 1.5px solid rgba(211, 143, 79, 0.5);
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    color: #d38f4f;
+    flex-shrink: 0;
+    margin-top: 1px;
 }
-
-.btn-primary:hover {
-    background-color: #357abd;
-    transform: translateY(-2px);
-}
-
-.btn-success {
-    background-color: #48bb78;
-    color: white;
-    margin-top: 20px;
-}
-
-.btn-success:hover {
-    background: #27ae60;
-    transform: scale(1.05);
-}
+ 
+/* ===== TABLEAU ===== */
 .table-container {
     width: 100%;
     overflow-x: auto;
@@ -136,26 +208,103 @@ h2.mb-4{
     border-radius: 10px;
     scrollbar-width: thin;
 }
-
-.table-container::-webkit-scrollbar {
-    height: 8px;
-}
-.table-container::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-.table-container::-webkit-scrollbar-thumb {
-    background-color: rgba(113, 175, 246, 0.8);
-    border-radius: 10px;
-}
-.dashboard-content {
-    flex: 1; /* C'est ce qui pousse le footer vers le bas */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+ 
+.table-container::-webkit-scrollbar { height: 6px; }
+.table-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+.table-container::-webkit-scrollbar-thumb { background: rgba(211,143,79,0.5); border-radius: 10px; }
+ 
+.table {
     width: 100%;
+    color: white;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
 }
-
+ 
+.table thead th {
+    background: rgba(211, 143, 79, 0.12);
+    color: #d38f4f;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(211, 143, 79, 0.25);
+    text-align: center;
+    font-weight: 700;
+}
+ 
+.table tbody tr:nth-child(odd)  { background-color: rgba(255,255,255,0.04); }
+.table tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.08); }
+.table tbody tr:hover { background-color: rgba(211, 143, 79, 0.1); transition: background 0.2s; }
+ 
+.table td {
+    padding: 13px 16px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.88);
+}
+ 
+/* ===== BOUTONS ===== */
+.btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+ 
+.btn-primary {
+    background: linear-gradient(135deg, #3eabda, #3eabda);
+    color: white;
+    box-shadow: 0 4px 15px rgba(74,144,226,0.3);
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #3eabda, #3eabda);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74,144,226,0.45);
+}
+ 
+.btn-success {
+    background: linear-gradient(135deg, #d38f4f, #d38f4f);
+    color: white;
+    margin-top: 24px;
+    box-shadow: 0 4px 15px rgba(72,187,120,0.3);
+}
+.btn-success:hover {
+    background: linear-gradient(135deg, #d38f4f, #d38f4f);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72,187,120,0.45);
+}
+ 
+.btn-danger {
+    background: linear-gradient(135deg, #e05555, #c0392b);
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+    margin: 0 2px;
+}
+.btn-danger:hover {
+    background: linear-gradient(135deg, #f06565, #d0493b);
+    transform: translateY(-1px);
+}
+ 
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin: 0 2px;
+    border-radius: 6px;
+}
+ 
+/* ===== FOOTER ===== */
 footer {
     background: #1B2030;
     color: #eee;
@@ -166,27 +315,10 @@ footer {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-top: auto; /* Pousse le footer vers le bas */
+    margin-top: auto;
 }
-
-.footer-content p {
-    margin: 0;
-    font-size: 14px;
-}
-
-.footer-content nav {
-    margin-top: 5px;
-}
-
-.footer-content a {
-    color: #aaa;
-    text-decoration: none;
-    font-size: 14px;
-    margin: 0 8px;
-}
-
-.footer-content a:hover {
-    color: #fff;
-    text-decoration: underline;
-}
-
+ 
+.footer-content p { margin: 0; font-size: 14px; }
+.footer-content nav { margin-top: 5px; }
+.footer-content a { color: #aaa; text-decoration: none; font-size: 14px; margin: 0 8px; }
+.footer-content a:hover { color: #fff; text-decoration: underline; }
