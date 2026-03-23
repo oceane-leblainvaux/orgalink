@@ -26,7 +26,7 @@ display: flex;
 gap: 30px; /* Espace généreux entre les menus */
 list-style: none;
 }
-
+ 
 .header-nav a {
 color: #FFFFFF; /* Écrit en BLANC pur */
 text-decoration: none;
@@ -35,21 +35,21 @@ font-size: 1rem;
 text-transform: uppercase; /* Optionnel : pour un look plus pro */
 transition: color 0.3s ease, transform 0.2s;
 }
-
+ 
 .header-nav a:hover {
 color: #8A2BE2; /* Change en violet au survol */
 transform: translateY(-2px); /* Petit effet de saut au survol */
 }
-
-
+ 
+ 
 .home-banner {
 flex: 1;
 display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
-background-image: url('../image/image_fond.png');
-        no-repeat center center/cover;
+background-image: url('../image/image_fond.png'); no-repeat center center/cover;
+       
 background-size: cover;
 background-attachment: fixed;
 width: 100%;
@@ -57,20 +57,20 @@ height: 100%;
 text-align: center;
 color: white;
 }
-
-
+ 
+ 
 .info {
 text-align: center;
 color: white;
 text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
 }
-
+ 
 .info h1 {
 font-size: 2.5rem;
 font-weight: bold;
 margin-bottom: 10px;
 }
-
+ 
 footer {
 background: #1B2030;
 color: #eee;
@@ -84,23 +84,23 @@ flex-direction: column;
 justify-content: center;
 margin-top: auto;
 }
-
+ 
 .footer-content p {
 margin: 0;
 font-size: 14px;
 }
-
+ 
 .footer-content nav {
 margin-top: 5px;
 }
-
+ 
 .footer-content a {
 color: #aaa;
 text-decoration: none;
 font-size: 14px;
 margin: 0 8px;
 }
-
+ 
 .footer-content a:hover {
 color: #fff;
 text-decoration: underline;
@@ -109,7 +109,7 @@ text-decoration: underline;
 color: white !important;
 text-decoration: none;
 }
-
+ 
 .meta a:hover {
 text-decoration: underline;
 }
@@ -119,7 +119,7 @@ height: auto;
 display: block;
 margin: 10px auto;
 }
-
+ 
 .login-icon {
 position: absolute;
 left: 50px; /* Ajuste ce chiffre (ex: 80px) pour le décaler plus ou moins à gauche */
@@ -128,10 +128,93 @@ display: flex;
 align-items: center;
 cursor: pointer;
 }
-
+ 
 /* Style de l'icône pour qu'elle soit blanche et de bonne taille */
 .login-icon svg, .login-icon img {
 width: 35px;
 height: 35px;
 filter: brightness(0) invert(1); /* Force le blanc si c'est une image noire */
 }
+ 
+/* ===== TOOLTIP / INFO BULLE ===== */
+.meta {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+ 
+.info-bubble {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    border-radius: 25px;
+    cursor: help;
+    position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: blur(4px);
+    text-shadow: none;
+    white-space: nowrap;
+}
+ 
+.info-bubble:hover {
+    background: rgba(138, 43, 226, 0.5);
+    border-color: #8A2BE2;
+}
+ 
+.info-bubble-icon {
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: "Montserrat", sans-serif;
+    line-height: 1;
+    text-shadow: none;
+    user-select: none;
+}
+ 
+.tooltip-text {
+    visibility: hidden !important;
+    opacity: 0;
+    width: 280px;
+    background: rgba(15, 17, 35, 0.97);
+    color: #e8e8f0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.6;
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid rgba(138, 43, 226, 0.5);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+    z-index: 9999;
+    text-align: left;
+    text-shadow: none !important;
+    pointer-events: none;
+    white-space: normal;
+}
+ 
+/* Petite flèche pointant vers le bouton */
+.tooltip-text::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: rgba(138, 43, 226, 0.5);
+}
+ 
+.info-bubble:hover .tooltip-text {
+    visibility: visible !important;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
+}
+ 
