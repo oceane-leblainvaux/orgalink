@@ -8,7 +8,9 @@ if (!isset($_GET['nom'])) {
     exit();
 }
  
-$nom = basename($_GET['nom']); // sécurité
+$nom = basename($_GET['nom']);
+$nom = pathinfo($nom, PATHINFO_FILENAME); // enlève .png si le nom contient .png
+
 $json_path = "../schemas/json/" . $nom . ".json";
  
 if (!file_exists($json_path)) {
