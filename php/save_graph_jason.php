@@ -19,4 +19,4 @@ if (!file_exists($json_path)) {
 }
  
 $json_data = file_get_contents($json_path);
-echo json_encode(["success" => true, "data" => json_decode($json_data)]);
+echo json_encode(["success" => true, "data" => json_decode($json_data)]); 

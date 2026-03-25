@@ -109,4 +109,4 @@ function reloadGraph(nom) {
       console.error(err);
       alert("Erreur lors de la récupération du graphique.");
     });
-}
+} 
