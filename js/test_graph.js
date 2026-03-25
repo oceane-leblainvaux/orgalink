@@ -109,8 +109,7 @@ function submitRelationDetails() {
     const uid = Date.now();
     
     // IMPORTANT: On stocke la description ici
-    const edgeData = { ...tempEdgeData, label: label.length <= 15 ? label : "", type_relation: label, direction: tempEdgeData.direction, impact_source_vers_cible: impactSrcCible, impact_cible_vers_source: impactCibleSrc, nature_relation: nature, description_relation: description, uid: uid };
-    
+    const edgeData = { ...tempEdgeData, label: "", type_relation: label, direction: tempEdgeData.direction, impact_source_vers_cible: impactSrcCible, impact_cible_vers_source: impactCibleSrc, nature_relation: nature, description_relation: description, uid: uid };
     const edge = cy.add({ group: 'edges', data: edgeData });
     edge.style({ 'line-color': color, 'target-arrow-color': color, 'width': styleSrc.width, 'line-style': styleSrc.style });
     
@@ -138,7 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             {
                 selector: 'edge',
-                style: { 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#999', 'target-arrow-color': '#999', 'width': 2, 'label': 'data(label)', 'font-size': '10px' }
+    style: { 
+        'curve-style': 'bezier', 
+        'target-arrow-shape': 'triangle', 
+        'line-color': '#999', 
+        'target-arrow-color': '#999', 
+        'width': 2, 
+        'label': '',      /* On force le label à vide pour qu'il n'écrive rien sur la flèche */
+        'font-size': '0px' /* Sécurité supplémentaire : taille de police à zéro */}
             },
             {
                 selector: '.hierarchie',
