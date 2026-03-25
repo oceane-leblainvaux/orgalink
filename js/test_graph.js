@@ -10,7 +10,6 @@ let lastTo = null;
  
 // Fonction pour l'effet de pulsation sur les éléments sélectionnés
 function pulseNodes() {
-    // On anime tous les nœuds sélectionnés (acteurs) pour qu'ils clignotent en rouge
     const selectedNodes = cy.nodes(':selected').filter(n => !n.data('isZone'));
     if (selectedNodes.length > 0) {
         selectedNodes.animate({
@@ -108,9 +107,13 @@ function submitRelationDetails() {
     const styleSrc = getLineStyleByImpact(impactSrcCible);
     const styleCible = getLineStyleByImpact(impactCibleSrc);
     const uid = Date.now();
+    
+    // IMPORTANT: On stocke la description ici
     const edgeData = { ...tempEdgeData, label: label.length <= 15 ? label : "", type_relation: label, direction: tempEdgeData.direction, impact_source_vers_cible: impactSrcCible, impact_cible_vers_source: impactCibleSrc, nature_relation: nature, description_relation: description, uid: uid };
+    
     const edge = cy.add({ group: 'edges', data: edgeData });
     edge.style({ 'line-color': color, 'target-arrow-color': color, 'width': styleSrc.width, 'line-style': styleSrc.style });
+    
     if (tempEdgeData.direction === "Double") {
         const reverseEdge = cy.add({ group: 'edges', data: { ...edgeData, id: edgeData.target + "-" + edgeData.source + "-" + Date.now(), source: edgeData.target, target: edgeData.source, label: "" } });
         reverseEdge.style({ 'line-color': color, 'target-arrow-color': color, 'width': styleCible.width, 'line-style': styleCible.style, 'curve-style': 'bezier' });
@@ -122,8 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cy = cytoscape({
         container: document.getElementById('cy'),
         boxSelectionEnabled: true,
-        autounselectify: false, // Permet la sélection
-        selectionType: 'additive', // TRÈS IMPORTANT : permet de cliquer sur plusieurs nœuds sans Ctrl
+        autounselectify: false,
+        selectionType: 'additive',
         elements: [],
         layout: { name: 'breadthfirst', directed: true },
         style: [
@@ -145,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 selector: '.zoneContour',
                 style: { 'background-opacity': 0, 'border-width': 3, 'border-style': 'dashed', 'border-color': '#2ecc71', 'label': 'data(label)', 'text-valign': 'top', 'text-halign': 'center', 'font-size': 14, 'color': '#444' }
             },
-            // STYLE DE SÉLECTION FORCÉ EN ROUGE
             {
                 selector: 'node:selected',
                 style: {
@@ -190,12 +192,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const styleSrc = getLineStyleByImpact(rel.impact_source_vers_cible);
                 const styleCible = getLineStyleByImpact(rel.impact_cible_vers_source);
                 informelleElements.push({
-                    data: { id: "rel_" + rel.uid, uid: rel.uid, source: rel.from, target: rel.to, label: rel.type_relation.length <= 15 ? rel.type_relation : "", type_relation: rel.type_relation, direction: rel.direction, impact_source_vers_cible: rel.impact_source_vers_cible, impact_cible_vers_source: rel.impact_cible_vers_source, nature_relation: rel.nature_relation, duree_relation: rel.duree_relation },
+                    data: { id: "rel_" + rel.uid, uid: rel.uid, source: rel.from, target: rel.to, label: rel.type_relation.length <= 15 ? rel.type_relation : "", type_relation: rel.type_relation, direction: rel.direction, impact_source_vers_cible: rel.impact_source_vers_cible, impact_cible_vers_source: rel.impact_cible_vers_source, nature_relation: rel.nature_relation, description_relation: rel.description_relation, duree_relation: rel.duree_relation }, // Ajout description ici
                     style: { 'line-color': color, 'target-arrow-color': color, 'width': styleSrc.width, 'line-style': styleSrc.style }
                 });
                 if (rel.direction === "Double") {
                     informelleElements.push({
-                        data: { id: "rel_" + rel.uid + "_reverse", uid: rel.uid, source: rel.to, target: rel.from, label: " ", direction: rel.direction, impact_source_vers_cible: rel.impact_cible_vers_source, impact_cible_vers_source: rel.impact_source_vers_cible, nature_relation: rel.nature_relation, duree_relation: rel.duree_relation },
+                        data: { id: "rel_" + rel.uid + "_reverse", uid: rel.uid, source: rel.to, target: rel.from, label: " ", direction: rel.direction, impact_source_vers_cible: rel.impact_cible_vers_source, impact_cible_vers_source: rel.impact_source_vers_cible, nature_relation: rel.nature_relation, description_relation: rel.description_relation, duree_relation: rel.duree_relation }, // Ajout description ici
                         style: { 'line-color': color, 'target-arrow-color': color, 'width': styleCible.width, 'line-style': styleCible.style }
                     });
                 }
@@ -204,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         setupMenu();
  
+        // TOOLTIP NODES (Existant)
         cy.on('mouseover', 'node', (event) => {
             const node = event.target;
             if (node.data('isZone')) return;
@@ -215,6 +218,56 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.appendChild(tooltip);
         });
         cy.on('mouseout', 'node', () => { const tooltip = document.getElementById('tooltipNode'); if (tooltip) tooltip.remove(); });
+
+        // --- NOUVEAU : TOOLTIP FLÈCHES (EDGES) ---
+        cy.on('mouseover', 'edge', (event) => {
+            const edge = event.target;
+            if (edge.hasClass('hierarchie')) return;
+
+            const desc = edge.data('description_relation') || "Pas de description renseignée.";
+            const type = edge.data('type_relation') || "Relation";
+            const nature = edge.data('nature_relation') || "Neutre";
+
+            const tooltip = document.createElement('div');
+            tooltip.id = 'tooltipEdge';
+            tooltip.innerHTML = `
+                <div style="border-bottom: 1px solid #d38f4f; margin-bottom: 5px; padding-bottom: 3px; font-weight: bold; color: #d38f4f;">
+                    ${type.toUpperCase()} (${nature})
+                </div>
+                <div style="font-style: italic;">${desc}</div>
+            `;
+            
+            Object.assign(tooltip.style, {
+                position: 'fixed',
+                top: (event.originalEvent.clientY + 15) + 'px',
+                left: (event.originalEvent.clientX + 15) + 'px',
+                background: 'rgba(15, 18, 35, 0.95)',
+                color: '#fff',
+                border: '1px solid #d38f4f',
+                padding: '10px',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 15px rgba(0,0,0,0.6)',
+                zIndex: '10001',
+                maxWidth: '280px',
+                fontSize: '12px',
+                fontFamily: 'Montserrat, sans-serif'
+            });
+
+            document.body.appendChild(tooltip);
+            edge.style('line-color', '#fff'); // Effet visuel au survol
+        });
+
+        cy.on('mouseout', 'edge', (event) => {
+            const edge = event.target;
+            const tooltip = document.getElementById('tooltipEdge');
+            if (tooltip) tooltip.remove();
+            
+            // Remettre la couleur d'origine selon la nature
+            const color = getColorByNature(edge.data('nature_relation'));
+            edge.style('line-color', color);
+        });
+        // --- FIN TOOLTIP FLÈCHES ---
+
     })
     .catch(err => console.error("Erreur de chargement :", err));
 });
@@ -223,7 +276,7 @@ function setupMenu() {
     document.getElementById("linkSimpleBtn").onclick = () => { 
         selectedTool = "simple"; 
         tempFromNode = null; 
-        cy.nodes().unselect(); // Nettoie la sélection quand on change d'outil
+        cy.nodes().unselect(); 
     };
     document.getElementById("linkDoubleBtn").onclick = () => { 
         selectedTool = "double"; 
@@ -248,23 +301,18 @@ function setupMenu() {
         }
     };
  
-    // GESTION DU CLIC SUR LES ACTEURS
     cy.on('tap', 'node', (e) => {
         const node = e.target;
-        
-        // Si on utilise l'outil couleur
         if (selectedColor) { 
             node.style('background-color', selectedColor); 
             selectedColor = null; 
             node.unselect();
             return; 
         }
-        
-        // Si on crée une relation (Flèche)
         if (selectedTool) {
             if (!tempFromNode) { 
                 tempFromNode = node; 
-                node.select(); // Marque le premier acteur en rouge
+                node.select(); 
             } else {
                 const from = tempFromNode.id(); 
                 const to = node.id();
@@ -287,7 +335,7 @@ function setupMenu() {
         cy.edges().forEach(edge => {
             if (!edge.hasClass("hierarchie")) {
                 relationsToSave.push({
-                    source: edge.source().id().replace("act_", ""), target: edge.target().id().replace("act_", ""), type_relation: edge.data("label") || "Non précisée", direction: edge.data("direction") || "Simple", impact_source_vers_cible: edge.data("impact_source_vers_cible") || "Moyen", impact_cible_vers_source: edge.data("impact_cible_vers_source") || "Moyen", nature_relation: edge.data("nature_relation") || "Neutre", duree_relation: edge.data("duree_relation") || 0
+                    source: edge.source().id().replace("act_", ""), target: edge.target().id().replace("act_", ""), type_relation: edge.data("type_relation") || edge.data("label"), direction: edge.data("direction") || "Simple", impact_source_vers_cible: edge.data("impact_source_vers_cible") || "Moyen", impact_cible_vers_source: edge.data("impact_cible_vers_source") || "Moyen", nature_relation: edge.data("nature_relation") || "Neutre", description_relation: edge.data("description_relation") || "", duree_relation: edge.data("duree_relation") || 0
                 });
             }
         });
@@ -300,7 +348,6 @@ function setupMenu() {
  
     setupColorPanel();
  
-    // Chargement d'un graphe depuis admin_view
     const loadNom = sessionStorage.getItem('loadGraphNom');
     if (loadNom) {
         sessionStorage.removeItem('loadGraphNom');
@@ -308,11 +355,9 @@ function setupMenu() {
             .then(res => res.json())
             .then(data => {
                 if (!data.success) { alert("Impossible de charger le graphique : " + data.message); return; }
-                // Supprime les éléments actuels et charge ceux du JSON
                 cy.elements().remove();
                 cy.add(data.data);
                 cy.layout({ name: 'preset' }).run();
-                alert(`Graphique "${loadNom}" chargé ! Vous pouvez le modifier.`);
             })
             .catch(err => { console.error(err); alert("Erreur lors du chargement."); });
     }
@@ -333,34 +378,28 @@ function setupColorPanel() {
  
 function creerZoneContour(type = "alliance") {
     const selectedNodes = cy.nodes(":selected").filter(node => !node.data('isZone'));
-    
     if (selectedNodes.length < 2) { 
-        alert("Cliquez sur au moins deux acteurs (ils doivent être entourés de rouge) avant de cliquer ici."); 
+        alert("Cliquez sur au moins deux acteurs avant de cliquer ici."); 
         return; 
     }
-    
     const boundingBox = selectedNodes.boundingBox();
     const idZone = "zone_" + Date.now();
     const couleur = type === "tension" ? "#e74c3c" : "#2ecc71";
     const etiquette = type === "tension" ? "TENSION - - -" : "ALLIANCE + + +";
-    
     cy.add({ 
         group: 'nodes', 
         data: { id: idZone, label: etiquette, isZone: true }, 
         position: { x: (boundingBox.x1 + boundingBox.x2) / 2, y: (boundingBox.y1 + boundingBox.y2) / 2 } 
     });
-    
     cy.$id(idZone).style({ 
         'shape': 'roundrectangle', 'width': boundingBox.w + 80, 'height': boundingBox.h + 80, 'background-opacity': 0, 'border-width': 3, 'border-color': couleur, 'border-style': 'dashed', 'label': etiquette, 'text-valign': 'top', 'text-halign': 'center', 'font-size': 14, 'color': '#444', 'z-compound-depth': 'bottom' 
     });
- 
-    // Optionnel : déselectionne tout après avoir créé la zone
     cy.nodes().unselect();
 }
  
 function supprimerZoneContour() {
     const zone = cy.nodes(":selected").filter(n => n.data('isZone') === true);
-    if (zone.length === 0) { alert("Sélectionne une zone à supprimer (clique sur le bord de la zone)."); return; }
+    if (zone.length === 0) { alert("Sélectionne une zone à supprimer."); return; }
     zone.remove();
 }
  
