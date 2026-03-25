@@ -13,13 +13,19 @@
 <body>
   <!-- HEADER -->
   <div class="header">
-      <nav class="header-nav">
-          <a href="../html/index.html">Accueil</a>
-          <a href="../html/dashboard.html">Tableau</a>
-          <a href="../html/organigramme.html">Organigramme formel</a>
-          <a href="../html/admin_view.html">Listes de graphiques</a>
-          <a href="../html/test_graph.html">Graphique informel</a>
-      </nav>
+ 
+    <div class="sides">
+      <div id="authButtons" class="login-icon"></div>
+    </div>
+ 
+    <nav class="header-nav">
+      <a href="../html/index.html">Accueil</a>
+      <a href="../html/dashboard.html">Tableau</a>
+      <a href="../html/organigramme.html">Organigramme formel</a>
+      <a href="../html/admin_view.html">Listes de graphiques</a>
+      <a href="../html/test_graph.html">Graphique informel</a>
+    </nav>
+ 
   </div>
  
   <header class="graph-intro">
@@ -34,16 +40,16 @@
         <div class="emploi-tooltip">
           <strong>Créer une relation</strong>
           Cliquez sur → Flèche simple ou ↔ Flèche double, sélectionnez 2 acteurs puis complétez le formulaire.
-
+ 
           <strong>Créer une zone alliance/tension</strong>
           Cliquez sur un acteur, maintenez Ctrl et cliquez les autres acteurs, puis cliquez sur le bouton de zone souhaité.
-
+ 
           <strong>Supprimer une zone</strong>
           Cliquez sur le cadre de la zone, puis "Supprimer une zone sélectionnée".
-
+ 
           <strong>Pour plus de visibilité</strong>
           Déplacez les acteurs si des relations se chevauchent.
-
+ 
           <strong>Graphique terminé ?</strong>
           Enregistrez puis envoyez au prof. La fiche acteur donne le détail des relations par radar/tableau.
         </div>
@@ -74,8 +80,6 @@
       <hr>
       <h4>Fiche acteur</h4>
       <button class="main-button" onclick="window.location.href='../html/fiche_acteur.html'" style="margin-top: 10px; background-color: #6c757d;">Fiche récapitulative</button>
-     
-
     </div>
  
     <div class="main">
@@ -105,21 +109,21 @@
  
   <!-- FOOTER -->
   <footer>
-      <div class="footer-content">
-          <p>&copy; 2026 Orgalink. Tous droits réservés.</p>
-          <nav>
-              <a href="../html/about.html">À propos de nous</a> |
-              <a href="#">Mentions Légales</a> |
-              <a href="../html/contact.html">Contact</a>
-          </nav>
-      </div>
+    <div class="footer-content">
+      <p>&copy; 2026 Orgalink. Tous droits réservés.</p>
+      <nav>
+        <a href="../html/about.html">À propos de nous</a> |
+        <a href="#">Mentions Légales</a> |
+        <a href="../html/contact.html">Contact</a>
+      </nav>
+    </div>
   </footer>
  
   <script src="../js/test_graph.js"></script>
   <script>
     const emploiBubble = document.querySelector('.panel .emploi-bubble');
     const emploiTooltip = document.querySelector('.panel .emploi-tooltip');
-
+ 
     if (emploiBubble && emploiTooltip) {
       emploiBubble.addEventListener('mouseenter', () => {
         const rect = emploiBubble.getBoundingClientRect();
@@ -129,14 +133,14 @@
         emploiTooltip.style.visibility = 'visible';
         emploiTooltip.style.opacity = '1';
       });
-
+ 
       emploiBubble.addEventListener('mouseleave', () => {
         emploiTooltip.style.visibility = 'hidden';
         emploiTooltip.style.opacity = '0';
       });
     }
   </script>
-
+ 
   <script src="../js/script.js"></script>
  
 </body>

@@ -11,45 +11,102 @@ height: 100vh;
 display: flex;
 flex-direction: column;
 }
+
+/* ===== HEADER ===== */
 .header {
 display: flex;
 align-items: center;
-justify-content: center;
+justify-content: space-between; /* ← clé : répartit les 3 zones */
 background: #1B2030;
 width: 100%;
-padding: 15px 30px;
+padding: 0 30px;
 min-height: 80px;
-position : relative;
 }
+
+/* Zone gauche : boutons auth */
+.sides {
+display: flex;
+align-items: center;
+min-width: 220px; /* Réserve de l'espace fixe à gauche */
+}
+
+/* Zone centrale : navigation */
 .header-nav {
 display: flex;
-gap: 30px; /* Espace généreux entre les menus */
+gap: 30px;
 list-style: none;
 }
- 
+
 .header-nav a {
-color: #FFFFFF; /* Écrit en BLANC pur */
+color: #FFFFFF;
 text-decoration: none;
 font-weight: 600;
 font-size: 1rem;
-text-transform: uppercase; /* Optionnel : pour un look plus pro */
+text-transform: uppercase;
 transition: color 0.3s ease, transform 0.2s;
 }
- 
+
 .header-nav a:hover {
-color: #8A2BE2; /* Change en violet au survol */
-transform: translateY(-2px); /* Petit effet de saut au survol */
+color: #8A2BE2;
+transform: translateY(-2px);
 }
- 
- 
+
+/* Icône / boutons login */
+.login-icon {
+display: flex;
+align-items: center;
+gap: 12px;
+cursor: pointer;
+}
+
+.login-icon svg,
+.login-icon img {
+width: 35px;
+height: 35px;
+filter: brightness(0) invert(1);
+}
+
+/* Style pour le texte "Bonjour X" et "Se déconnecter" générés par script.js */
+.login-icon a,
+.login-icon span,
+.login-icon button {
+color: #FFFFFF;
+font-size: 1rem;
+font-weight: 600;
+text-decoration: none;
+text-transform: uppercase;
+background: none;
+border: none;
+cursor: pointer;
+font-family: "Montserrat", sans-serif;
+transition: color 0.3s ease, transform 0.2s;
+white-space: nowrap;
+}
+
+.login-icon a:hover,
+.login-icon span:hover,
+.login-icon button:hover {
+color: #8A2BE2;
+transform: translateY(-2px);
+}
+
+/* Séparateur visuel discret entre "Bonjour X" et "Se déconnecter" */
+.login-icon a + a,
+.login-icon span + a,
+.login-icon a + button {
+padding-left: 10px;
+border-left: 1px solid rgba(255,255,255,0.25);
+margin-left: 2px;
+}
+
+/* ===== BANNER ===== */
 .home-banner {
 flex: 1;
 display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
-background-image: url('../image/image_fond.png'); no-repeat center center/cover;
-       
+background-image: url('../image/image_fond.png');
 background-size: cover;
 background-attachment: fixed;
 width: 100%;
@@ -57,26 +114,25 @@ height: 100%;
 text-align: center;
 color: white;
 }
- 
- 
+
 .info {
 text-align: center;
 color: white;
 text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
 }
- 
+
 .info h1 {
 font-size: 2.5rem;
 font-weight: bold;
 margin-bottom: 10px;
 }
- 
+
+/* ===== FOOTER ===== */
 footer {
 background: #1B2030;
 color: #eee;
 text-align: center;
 padding: 15px 10px;
-border-radius: 0;
 width: 100%;
 height: 80px;
 display: flex;
@@ -84,137 +140,121 @@ flex-direction: column;
 justify-content: center;
 margin-top: auto;
 }
- 
+
 .footer-content p {
 margin: 0;
 font-size: 14px;
 }
- 
+
 .footer-content nav {
 margin-top: 5px;
 }
- 
+
 .footer-content a {
 color: #aaa;
 text-decoration: none;
 font-size: 14px;
 margin: 0 8px;
 }
- 
+
 .footer-content a:hover {
 color: #fff;
 text-decoration: underline;
 }
+
 .meta a {
 color: white !important;
 text-decoration: none;
 }
- 
+
 .meta a:hover {
 text-decoration: underline;
 }
+
 .meta img {
 max-width: 50px;
 height: auto;
 display: block;
 margin: 10px auto;
 }
- 
-.login-icon {
-position: absolute;
-left: 50px; /* Ajuste ce chiffre (ex: 80px) pour le décaler plus ou moins à gauche */
-margin-top: -17.5px;
-display: flex;
-align-items: center;
-cursor: pointer;
-}
- 
-/* Style de l'icône pour qu'elle soit blanche et de bonne taille */
-.login-icon svg, .login-icon img {
-width: 35px;
-height: 35px;
-filter: brightness(0) invert(1); /* Force le blanc si c'est une image noire */
-}
- 
+
 /* ===== TOOLTIP / INFO BULLE ===== */
 .meta {
-    display: flex;
-    justify-content: center;
-    margin-top: 16px;
+display: flex;
+justify-content: center;
+margin-top: 16px;
 }
- 
+
 .info-bubble {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 18px;
-    background: rgba(76, 75, 75, 0.6);
-    border: 1.5px solid rgba(255, 255, 255, 0.6);
-    border-radius: 25px;
-    cursor: help;
-    position: relative;
-    transition: background 0.2s ease, border-color 0.2s ease;
-    backdrop-filter: blur(4px);
-    text-shadow: none;
-    white-space: nowrap;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+padding: 8px 18px;
+background: rgba(76, 75, 75, 0.6);
+border: 1.5px solid rgba(255, 255, 255, 0.6);
+border-radius: 25px;
+cursor: help;
+position: relative;
+transition: background 0.2s ease, border-color 0.2s ease;
+backdrop-filter: blur(4px);
+text-shadow: none;
+white-space: nowrap;
 }
- 
+
 .info-bubble:hover {
-    background: rgba(59, 187, 225, 0.5);
-    border-color: #2bc2e7;
+background: rgba(59, 187, 225, 0.5);
+border-color: #2bc2e7;
 }
- 
+
 .info-bubble-icon {
-    color: white;
-    font-size: 13px;
-    font-weight: 700;
-    font-family: "Montserrat", sans-serif;
-    line-height: 1;
-    text-shadow: none;
-    user-select: none;
+color: white;
+font-size: 13px;
+font-weight: 700;
+font-family: "Montserrat", sans-serif;
+line-height: 1;
+text-shadow: none;
+user-select: none;
 }
- 
+
 .tooltip-text {
-    visibility: hidden !important;
-    opacity: 0;
-    width: 280px;
-    background: rgba(15, 17, 35, 0.97);
-    color: #e8e8f0;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.6;
-    border-radius: 10px;
-    padding: 12px 16px;
-    border: 1px solid rgba(59, 187, 225, 0.5);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-    position: absolute;
-    bottom: calc(100% + 14px);
-    left: 50%;
-    transform: translateX(-50%) translateY(8px);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
-    z-index: 9999;
-    text-align: left;
-    text-shadow: none !important;
-    pointer-events: none;
-    white-space: normal;
+visibility: hidden !important;
+opacity: 0;
+width: 280px;
+background: rgba(15, 17, 35, 0.97);
+color: #e8e8f0;
+font-size: 13px;
+font-weight: 400;
+line-height: 1.6;
+border-radius: 10px;
+padding: 12px 16px;
+border: 1px solid rgba(59, 187, 225, 0.5);
+box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+position: absolute;
+bottom: calc(100% + 14px);
+left: 50%;
+transform: translateX(-50%) translateY(8px);
+transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+z-index: 9999;
+text-align: left;
+text-shadow: none !important;
+pointer-events: none;
+white-space: normal;
 }
- 
-/* Petite flèche pointant vers le bouton */
+
 .tooltip-text::after {
-    display: block;
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 7px solid transparent;
-    border-top-color: rgba(59, 187, 225, 0.5);
+display: block;
+content: '';
+position: absolute;
+top: 100%;
+left: 50%;
+transform: translateX(-50%);
+border: 7px solid transparent;
+border-top-color: rgba(59, 187, 225, 0.5);
 }
- 
+
 .info-bubble:hover .tooltip-text {
-    visibility: visible !important;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
+visibility: visible !important;
+opacity: 1;
+transform: translateX(-50%) translateY(0);
+transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
 }
- 

@@ -75,4 +75,16 @@ body {
     box-shadow: none;
 }
 
+/* Ciblage des éléments de ton header */
+.header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Ajuste l'espace entre "Bonjour" et "Se déconnecter" */
+    font-size: 0.9rem; /* Réduit légèrement la taille du texte */
+}
+
+.logout-link {
+    white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+    margin-left: 10px;
+}
 
