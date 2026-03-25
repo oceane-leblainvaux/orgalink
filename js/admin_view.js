@@ -24,6 +24,10 @@ fetch('../php/get_saved_graph.php')
         ? "—"
         : `<a href="../schemas/${schema.nom}.json" target="_blank">Voir JSON</a>`;
 
+      const reloadBtn = schema.type_schema === "informelle"
+        ? `<button class="btn-reload" onclick="reloadGraph('${schema.nom}')">✏️ Remodifier</button>`
+        : "—";
+
       tr.innerHTML = `
         <td>${schema.prenom}</td>
         <td>${schema.nom_utilisateur}</td>
@@ -34,6 +38,7 @@ fetch('../php/get_saved_graph.php')
           ${downloadLink}
         </td>
         <td>${jsonLink}</td>
+        <td>${reloadBtn}</td>
         <td><button onclick="deleteSchema(${schema.id_schema})">Supprimer</button></td>
       `;
 
@@ -65,4 +70,20 @@ function deleteSchema(id) {
       console.error("Erreur :", err);
       alert("Erreur réseau ou JSON.");
     });
+}
+
+function reloadGraph(nom) {
+  // Vérifie que le JSON existe avant de rediriger
+  fetch('../php/get_graph_json.php?nom=' + encodeURIComponent(nom))
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        alert("Aucune donnée JSON trouvée pour ce graphique. Il a peut-être été sauvegardé avant la mise à jour.");
+        return;
+      }
+      // Stocke le nom dans sessionStorage et redirige
+      sessionStorage.setItem('loadGraphNom', nom);
+      window.location.href = '../html/test_graph.html';
+    })
+    .catch(() => alert("Erreur lors de la récupération du graphique."));
 }

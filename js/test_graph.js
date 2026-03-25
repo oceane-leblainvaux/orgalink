@@ -299,6 +299,23 @@ function setupMenu() {
     };
  
     setupColorPanel();
+ 
+    // Chargement d'un graphe depuis admin_view
+    const loadNom = sessionStorage.getItem('loadGraphNom');
+    if (loadNom) {
+        sessionStorage.removeItem('loadGraphNom');
+        fetch('../php/get_graph_json.php?nom=' + encodeURIComponent(loadNom))
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) { alert("Impossible de charger le graphique : " + data.message); return; }
+                // Supprime les éléments actuels et charge ceux du JSON
+                cy.elements().remove();
+                cy.add(data.data);
+                cy.layout({ name: 'preset' }).run();
+                alert(`Graphique "${loadNom}" chargé ! Vous pouvez le modifier.`);
+            })
+            .catch(err => { console.error(err); alert("Erreur lors du chargement."); });
+    }
 }
  
 function setupColorPanel() {
@@ -352,10 +369,13 @@ document.getElementById("submitToProfBtn").onclick = () => {
     if (!userId) { alert("Vous devez être connecté."); return; }
     const imageData = cy.png({ scale: 2, output: 'blob' });
     const formData = new FormData();
+    const graphNom = "graphe_informel_" + Date.now();
+    const graphElements = cy.json().elements;
     formData.append("image", imageData, "graph_informel.png");
     formData.append("id_utilisateur", userId);
     formData.append("type_schema", "informelle");
-    formData.append("nom", "graphe_informel_" + Date.now());
+    formData.append("nom", graphNom);
+    formData.append("graph_json", JSON.stringify(graphElements));
     fetch("../php/save_graph_with_image.php", { method: "POST", body: formData })
     .then(res => res.json()).then(data => {
         if (data.success) {
