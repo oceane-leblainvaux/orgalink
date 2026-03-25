@@ -3,11 +3,11 @@ let selectedTool = null;
 let tempFromNode = null;
 let selectedColor = null;
 let deletedRelationIds = [];
-
+ 
 let tempEdgeData = null;
 let lastFrom = null;
 let lastTo = null;
-
+ 
 // Fonction pour l'effet de pulsation sur les éléments sélectionnés
 function pulseNodes() {
     // On anime tous les nœuds sélectionnés (acteurs) pour qu'ils clignotent en rouge
@@ -30,40 +30,42 @@ function pulseNodes() {
         setTimeout(pulseNodes, 500);
     }
 }
-
+ 
 function getPopupFormHTML(direction) {
     const isDouble = direction === "Double";
     return `
-    <div id="relationForm" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #0074D9; box-shadow: 0 0 15px rgba(0,0,0,0.3); z-index: 9999;">
-      <h4>Détails de la relation</h4>
-      <label>Type :</label>
-      <input type="text" id="popupType" placeholder="ex: Influence, Amitié..." style="width:100%"><br><br>
-      <label>Impact Source → Cible :</label>
-      <select id="popupImpactSrcCible" style="width:100%">
+    <div id="relationForm" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,18,35,0.98); padding: 24px; border: 1px solid rgba(211,143,79,0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.7); z-index: 9999; border-radius: 12px; width: 340px; font-family: Montserrat, sans-serif; color: white;">
+      <h4 style="margin:0 0 18px; color:#d38f4f; font-family:Rajdhani,sans-serif; text-transform:uppercase; letter-spacing:0.06em; font-size:16px;">Détails de la relation</h4>
+      <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Type :</label>
+      <input type="text" id="popupType" placeholder="ex: Influence, Amitié..." style="width:100%; padding:8px 10px; margin:5px 0 14px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:white; font-family:Montserrat,sans-serif; font-size:13px; box-sizing:border-box;"><br>
+      <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Impact Source → Cible :</label>
+      <select id="popupImpactSrcCible" style="width:100%; padding:8px 10px; margin:5px 0 14px; background:rgba(30,33,50,0.98); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:white; font-family:Montserrat,sans-serif; font-size:13px; box-sizing:border-box;">
         <option value="Faible">Faible</option>
         <option value="Moyen" selected>Neutre</option>
         <option value="Fort">Fort</option>
-      </select><br><br>
+      </select><br>
       ${isDouble ? `
-      <label>Impact Cible → Source :</label>
-      <select id="popupImpactCibleSrc" style="width:100%">
+      <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Impact Cible → Source :</label>
+      <select id="popupImpactCibleSrc" style="width:100%; padding:8px 10px; margin:5px 0 14px; background:rgba(30,33,50,0.98); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:white; font-family:Montserrat,sans-serif; font-size:13px; box-sizing:border-box;">
         <option value="Faible">Faible</option>
         <option value="Moyen" selected>Neutre</option>
         <option value="Fort">Fort</option>
-      </select><br><br>` : ''}
-      <label>Nature :</label>
-      <select id="popupNature" style="width:100%">
+      </select><br>` : ''}
+      <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Nature :</label>
+      <select id="popupNature" style="width:100%; padding:8px 10px; margin:5px 0 14px; background:rgba(30,33,50,0.98); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:white; font-family:Montserrat,sans-serif; font-size:13px; box-sizing:border-box;">
         <option value="Positive">Positive</option>
         <option value="Négative">Négative</option>
         <option value="Neutre" selected>Neutre</option>
-      </select><br><br>
-      <label>Durée :</label>
-      <input type="text" id="popupDuree" placeholder="ex: 12 mois ou Relation longue" style="width:100%"><br><br>
-      <button onclick="submitRelationDetails()">Valider</button>
-      <button onclick="cancelRelation()">Annuler</button>
+      </select><br>
+      <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Description :</label>
+      <textarea id="popupDescription" placeholder="Décrivez la nature de cette relation..." style="width:100%; padding:8px 10px; margin:5px 0 18px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:white; font-family:Montserrat,sans-serif; font-size:13px; box-sizing:border-box; resize:vertical; min-height:80px;"></textarea><br>
+      <div style="display:flex; gap:10px;">
+        <button onclick="submitRelationDetails()" style="flex:1; padding:10px; background:linear-gradient(135deg,#d38f4f,#b8762f); color:white; border:none; border-radius:7px; cursor:pointer; font-family:Montserrat,sans-serif; font-weight:700; font-size:13px;">Valider</button>
+        <button onclick="cancelRelation()" style="flex:1; padding:10px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.12); border-radius:7px; cursor:pointer; font-family:Montserrat,sans-serif; font-weight:600; font-size:13px;">Annuler</button>
+      </div>
     </div>`;
 }
-
+ 
 function createRelationPopup(fromId, toId, direction) {
     if (document.getElementById("relationForm")) return;
     lastFrom = fromId;
@@ -71,13 +73,13 @@ function createRelationPopup(fromId, toId, direction) {
     tempEdgeData = { id: "rel_" + Date.now(), source: fromId, target: toId, direction };
     document.body.insertAdjacentHTML("beforeend", getPopupFormHTML(direction));
 }
-
+ 
 function cancelRelation() {
     const form = document.getElementById("relationForm");
     if (form) form.remove();
     tempEdgeData = null;
 }
-
+ 
 function getColorByNature(nature) {
     switch (nature) {
         case 'Positive': return '#2ecc71';
@@ -86,7 +88,7 @@ function getColorByNature(nature) {
         default: return '#999';
     }
 }
-
+ 
 function getLineStyleByImpact(impact) {
     switch (impact) {
         case 'Faible': return { width: 2, style: 'dotted' };
@@ -95,18 +97,18 @@ function getLineStyleByImpact(impact) {
         default: return { width: 2, style: 'solid' };
     }
 }
-
+ 
 function submitRelationDetails() {
     const label = document.getElementById("popupType").value.trim();
     const impactSrcCible = document.getElementById("popupImpactSrcCible").value;
     const impactCibleSrc = document.getElementById("popupImpactCibleSrc") ? document.getElementById("popupImpactCibleSrc").value : null;
     const nature = document.getElementById("popupNature").value;
-    const duree = document.getElementById("popupDuree").value.trim();
+    const description = document.getElementById("popupDescription") ? document.getElementById("popupDescription").value.trim() : "";
     const color = getColorByNature(nature);
     const styleSrc = getLineStyleByImpact(impactSrcCible);
     const styleCible = getLineStyleByImpact(impactCibleSrc);
     const uid = Date.now();
-    const edgeData = { ...tempEdgeData, label: label.length <= 15 ? label : "", type_relation: label, direction: tempEdgeData.direction, impact_source_vers_cible: impactSrcCible, impact_cible_vers_source: impactCibleSrc, nature_relation: nature, duree_relation: duree, uid: uid };
+    const edgeData = { ...tempEdgeData, label: label.length <= 15 ? label : "", type_relation: label, direction: tempEdgeData.direction, impact_source_vers_cible: impactSrcCible, impact_cible_vers_source: impactCibleSrc, nature_relation: nature, description_relation: description, uid: uid };
     const edge = cy.add({ group: 'edges', data: edgeData });
     edge.style({ 'line-color': color, 'target-arrow-color': color, 'width': styleSrc.width, 'line-style': styleSrc.style });
     if (tempEdgeData.direction === "Double") {
@@ -115,7 +117,7 @@ function submitRelationDetails() {
     }
     cancelRelation();
 }
-
+ 
 document.addEventListener("DOMContentLoaded", () => {
     cy = cytoscape({
         container: document.getElementById('cy'),
@@ -157,9 +159,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         ]
     });
-
+ 
     cy.ready(() => pulseNodes());
-
+ 
     Promise.all([
         fetch('../php/dashboard.php').then(res => res.json()),
         fetch('../php/get_relations_hierarchiques.php').then(res => res.json()),
@@ -180,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         cy.add(hierarchyElements);
         cy.layout({ name: 'breadthfirst', directed: true, spacingFactor: 1.4, roots: cy.nodes().filter(node => cy.edges('[target = "' + node.id() + '"]').length === 0), animate: true, orientation: 'vertical' }).run();
-
+ 
         if (Array.isArray(relationsInformelles)) {
             const informelleElements = [];
             relationsInformelles.forEach(rel => {
@@ -201,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cy.add(informelleElements);
         }
         setupMenu();
-
+ 
         cy.on('mouseover', 'node', (event) => {
             const node = event.target;
             if (node.data('isZone')) return;
@@ -216,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => console.error("Erreur de chargement :", err));
 });
-
+ 
 function setupMenu() {
     document.getElementById("linkSimpleBtn").onclick = () => { 
         selectedTool = "simple"; 
@@ -245,7 +247,7 @@ function setupMenu() {
             selected.remove();
         }
     };
-
+ 
     // GESTION DU CLIC SUR LES ACTEURS
     cy.on('tap', 'node', (e) => {
         const node = e.target;
@@ -279,7 +281,7 @@ function setupMenu() {
             }
         }
     });
-
+ 
     document.getElementById("saveGraphBtn").onclick = () => {
         const relationsToSave = [];
         cy.edges().forEach(edge => {
@@ -295,10 +297,10 @@ function setupMenu() {
             deletedRelationIds = [];
         }).catch(err => { console.error("Erreur serveur :", err); alert("Problème de communication avec le serveur."); });
     };
-
+ 
     setupColorPanel();
 }
-
+ 
 function setupColorPanel() {
     const colors = ["#bdc3c7", "#58B19F", "#f8c291", "#82ccdd", "#f6b93b", "#F97F51", "#a29bfe", "#ff7675"];
     const panel = document.getElementById("colorPanel");
@@ -311,7 +313,7 @@ function setupColorPanel() {
         panel.appendChild(btn);
     });
 }
-
+ 
 function creerZoneContour(type = "alliance") {
     const selectedNodes = cy.nodes(":selected").filter(node => !node.data('isZone'));
     
@@ -334,17 +336,17 @@ function creerZoneContour(type = "alliance") {
     cy.$id(idZone).style({ 
         'shape': 'roundrectangle', 'width': boundingBox.w + 80, 'height': boundingBox.h + 80, 'background-opacity': 0, 'border-width': 3, 'border-color': couleur, 'border-style': 'dashed', 'label': etiquette, 'text-valign': 'top', 'text-halign': 'center', 'font-size': 14, 'color': '#444', 'z-compound-depth': 'bottom' 
     });
-
+ 
     // Optionnel : déselectionne tout après avoir créé la zone
     cy.nodes().unselect();
 }
-
+ 
 function supprimerZoneContour() {
     const zone = cy.nodes(":selected").filter(n => n.data('isZone') === true);
     if (zone.length === 0) { alert("Sélectionne une zone à supprimer (clique sur le bord de la zone)."); return; }
     zone.remove();
 }
-
+ 
 document.getElementById("submitToProfBtn").onclick = () => {
     const userId = sessionStorage.getItem("userId");
     if (!userId) { alert("Vous devez être connecté."); return; }
