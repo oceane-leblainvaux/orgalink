@@ -1,7 +1,7 @@
 Array
 (
-    [id_utilisateur] => 19
+    [id_utilisateur] => 18
     [nom] => tata
-    [prenom] => titi
-    [role] => eleve
+    [prenom] => tutu
+    [role] => prof
 )
