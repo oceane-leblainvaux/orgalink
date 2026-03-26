@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = JSON.parse(text);
             if (data.success) {
                 // Stocker l'utilisateur co
-                sessionStorage.setItem("userId", data.userId);
-                sessionStorage.setItem("prenom", data.prenom); 
+                localStorage.setItem("userId", data.userId);
+                localStorage.setItem("prenom", data.prenom); 
                 // Renvoi vers l'accueil
                 window.location.href = "../html/index.html";
             } else {

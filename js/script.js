@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Co/Déco
     const authContainer = document.getElementById("authButtons");
-    const userId = sessionStorage.getItem("userId");
-    const prenom = sessionStorage.getItem("prenom") || "Utilisateur";
+    const userId = localStorage.getItem("userId");
+    const prenom = localStorage.getItem("prenom") || "Utilisateur";
 
     if (authContainer) {
         if (userId) {
@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </button>
             `;
             document.getElementById("logoutBtn").addEventListener("click", () => {
-                sessionStorage.removeItem("userId");
-                sessionStorage.removeItem("prenom");
+                localStorage.removeItem("userId");
+                localStorage.removeItem("prenom");
                 window.location.href = "../php/logout.php";
             });
         } else {
