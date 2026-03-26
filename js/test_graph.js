@@ -307,6 +307,44 @@ function setupMenu() {
         }
     };
  
+    // Suivi des zones quand un acteur est déplacé
+    // On stocke la position de départ au début du drag
+    cy.on('grab', 'node', (e) => {
+        const node = e.target;
+        if (node.data('isZone')) return;
+        node._dragStartPos = { x: node.position('x'), y: node.position('y') };
+    });
+
+    cy.on('drag', 'node', (e) => {
+        const node = e.target;
+        if (node.data('isZone')) return;
+        const nodeId = node.id();
+        const startPos = node._dragStartPos;
+        if (!startPos) return;
+
+        const dx = node.position('x') - startPos.x;
+        const dy = node.position('y') - startPos.y;
+
+        // Chercher les zones qui étaient positionnées sur ce nœud
+        cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === nodeId).forEach(zone => {
+            zone.position({
+                x: zone.data('_baseX') + dx,
+                y: zone.data('_baseY') + dy
+            });
+        });
+    });
+
+    cy.on('free', 'node', (e) => {
+        const node = e.target;
+        if (node.data('isZone')) return;
+        // Mettre à jour la base position des zones attachées
+        cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === node.id()).forEach(zone => {
+            zone.data('_baseX', zone.position('x'));
+            zone.data('_baseY', zone.position('y'));
+        });
+        node._dragStartPos = null;
+    });
+
     cy.on('tap', 'node', (e) => {
         const node = e.target;
         if (selectedColor) { 
@@ -388,25 +426,118 @@ function creerZoneContour(type = "alliance") {
         alert("Cliquez sur au moins deux acteurs avant de cliquer ici."); 
         return; 
     }
-    const boundingBox = selectedNodes.boundingBox();
-    const idZone = "zone_" + Date.now();
-    const couleur = type === "tension" ? "#e74c3c" : "#2ecc71";
+
+    const defaultCouleur = type === "tension" ? "#e74c3c" : "#2ecc71";
     const etiquette = type === "tension" ? "TENSION - - -" : "ALLIANCE + + +";
-    cy.add({ 
-        group: 'nodes', 
-        data: { id: idZone, label: etiquette, isZone: true }, 
-        position: { x: (boundingBox.x1 + boundingBox.x2) / 2, y: (boundingBox.y1 + boundingBox.y2) / 2 } 
+
+    if (document.getElementById("zoneColorPopup")) return;
+
+    const popup = document.createElement("div");
+    popup.id = "zoneColorPopup";
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(15,18,35,0.98); padding: 28px 24px; border: 1px solid rgba(211,143,79,0.4);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7); z-index: 9999; border-radius: 12px;
+        width: 300px; font-family: Montserrat, sans-serif; color: white; text-align: center;
+    `;
+
+    const presets = ["#2ecc71","#3498db","#9b59b6","#f39c12","#e74c3c","#1abc9c","#e67e22","#e91e63","#ffffff","#00bcd4"];
+
+    popup.innerHTML = `
+        <h4 style="margin:0 0 16px; color:#d38f4f; font-family:Rajdhani,sans-serif; text-transform:uppercase; letter-spacing:0.06em; font-size:15px;">
+            Couleur de la zone<br><span style="font-size:12px; color:rgba(255,255,255,0.5)">${etiquette}</span>
+        </h4>
+        <div id="zonePresetColors" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:16px;">
+            ${presets.map(c => `
+                <div data-color="${c}" style="
+                    width:32px; height:32px; border-radius:50%; background:${c};
+                    cursor:pointer; border:3px solid transparent; transition:border 0.2s;
+                    box-shadow:0 2px 6px rgba(0,0,0,0.4);
+                "></div>
+            `).join("")}
+        </div>
+        <div style="margin-bottom:18px;">
+            <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700; display:block; margin-bottom:6px;">Ou choisir une couleur libre :</label>
+            <input type="color" id="zoneColorPicker" value="${defaultCouleur}" style="width:60px; height:36px; border:none; border-radius:6px; cursor:pointer; background:none;">
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button id="zoneColorConfirm" style="flex:1; padding:10px; background:linear-gradient(135deg,#d38f4f,#b8762f); color:white; border:none; border-radius:7px; cursor:pointer; font-family:Montserrat,sans-serif; font-weight:700; font-size:13px;">Créer</button>
+            <button id="zoneColorCancel" style="flex:1; padding:10px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.12); border-radius:7px; cursor:pointer; font-family:Montserrat,sans-serif; font-weight:600; font-size:13px;">Annuler</button>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    let couleurChoisie = defaultCouleur;
+
+    popup.querySelectorAll("#zonePresetColors div").forEach(btn => {
+        btn.addEventListener("mouseover", () => { if (btn.dataset.selected !== "1") btn.style.border = "3px solid rgba(255,255,255,0.5)"; });
+        btn.addEventListener("mouseout",  () => { if (btn.dataset.selected !== "1") btn.style.border = "3px solid transparent"; });
+        btn.addEventListener("click", () => {
+            popup.querySelectorAll("#zonePresetColors div").forEach(b => { b.style.border = "3px solid transparent"; b.dataset.selected = "0"; });
+            btn.style.border = "3px solid white";
+            btn.dataset.selected = "1";
+            couleurChoisie = btn.dataset.color;
+            document.getElementById("zoneColorPicker").value = couleurChoisie;
+        });
     });
-    cy.$id(idZone).style({ 
-        'shape': 'roundrectangle', 'width': boundingBox.w + 80, 'height': boundingBox.h + 80, 'background-opacity': 0, 'border-width': 3, 'border-color': couleur, 'border-style': 'dashed', 'label': etiquette, 'text-valign': 'top', 'text-halign': 'center', 'font-size': 14, 'color': '#444', 'z-compound-depth': 'bottom' 
+
+    document.getElementById("zoneColorPicker").addEventListener("input", (e) => {
+        couleurChoisie = e.target.value;
+        popup.querySelectorAll("#zonePresetColors div").forEach(b => { b.style.border = "3px solid transparent"; b.dataset.selected = "0"; });
     });
-    cy.nodes().unselect();
+
+    document.getElementById("zoneColorCancel").addEventListener("click", () => {
+        popup.remove();
+        cy.nodes().unselect();
+    });
+
+    document.getElementById("zoneColorConfirm").addEventListener("click", () => {
+        popup.remove();
+        const groupId = "group_" + Date.now();
+        selectedNodes.forEach((node, i) => {
+            const pos = node.position();
+            const w = node.width();
+            const h = node.height();
+            const idZone = groupId + "_" + i;
+            cy.add({ 
+                group: 'nodes', 
+                data: { id: idZone, label: i === 0 ? etiquette : "", isZone: true, groupId: groupId, _attachedTo: node.id(), _baseX: pos.x, _baseY: pos.y }, 
+                position: { x: pos.x, y: pos.y } 
+            });
+            cy.$id(idZone).style({ 
+                'shape': 'roundrectangle', 
+                'width': w + 24, 
+                'height': h + 24, 
+                'background-opacity': 0, 
+                'border-width': 3, 
+                'border-color': couleurChoisie, 
+                'border-style': 'dashed', 
+                'label': i === 0 ? etiquette : "",
+                'text-valign': 'top', 
+                'text-halign': 'center', 
+                'font-size': 12, 
+                'color': couleurChoisie, 
+                'z-index': -1,
+                'events': 'no'
+            });
+        });
+        cy.nodes().unselect();
+    });
 }
  
 function supprimerZoneContour() {
     const zone = cy.nodes(":selected").filter(n => n.data('isZone') === true);
     if (zone.length === 0) { alert("Sélectionne une zone à supprimer."); return; }
-    zone.remove();
+    // Supprimer tous les contours du même groupe
+    zone.forEach(z => {
+        const groupId = z.data('groupId');
+        if (groupId) {
+            cy.nodes().filter(n => n.data('groupId') === groupId).remove();
+        } else {
+            z.remove();
+        }
+    });
 }
  
 document.getElementById("submitToProfBtn").onclick = () => {
