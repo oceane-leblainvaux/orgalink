@@ -500,23 +500,29 @@ function creerZoneContour(type = "alliance") {
             const w = node.width();
             const h = node.height();
             const idZone = groupId + "_" + i;
+
+            // Calculer l'offset selon le nombre de zones déjà existantes sur ce noeud
+            const existingZones = cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === node.id());
+            const offsetStep = 14; // px entre chaque anneau
+            const offset = (existingZones.length + 1) * offsetStep;
+
             cy.add({ 
                 group: 'nodes', 
-                data: { id: idZone, label: i === 0 ? etiquette : "", isZone: true, groupId: groupId, _attachedTo: node.id(), _baseX: pos.x, _baseY: pos.y }, 
+                data: { id: idZone, label: i === 0 ? etiquette : "", isZone: true, groupId: groupId, _attachedTo: node.id(), _baseX: pos.x, _baseY: pos.y, _offset: offset }, 
                 position: { x: pos.x, y: pos.y } 
             });
             cy.$id(idZone).style({ 
                 'shape': 'roundrectangle', 
-                'width': w + 24, 
-                'height': h + 24, 
+                'width': w + offset * 2, 
+                'height': h + offset * 2, 
                 'background-opacity': 0, 
-                'border-width': 3, 
+                'border-width': 2, 
                 'border-color': couleurChoisie, 
                 'border-style': 'dashed', 
                 'label': i === 0 ? etiquette : "",
                 'text-valign': 'top', 
                 'text-halign': 'center', 
-                'font-size': 12, 
+                'font-size': 11, 
                 'color': couleurChoisie, 
                 'z-index': -1,
                 'events': 'no'
@@ -527,17 +533,72 @@ function creerZoneContour(type = "alliance") {
 }
  
 function supprimerZoneContour() {
-    const zone = cy.nodes(":selected").filter(n => n.data('isZone') === true);
-    if (zone.length === 0) { alert("Sélectionne une zone à supprimer."); return; }
-    // Supprimer tous les contours du même groupe
-    zone.forEach(z => {
-        const groupId = z.data('groupId');
-        if (groupId) {
-            cy.nodes().filter(n => n.data('groupId') === groupId).remove();
-        } else {
-            z.remove();
-        }
+    if (document.getElementById("zoneDeletePopup")) return;
+
+    // Récupérer les acteurs sélectionnés
+    const selectedActeurs = cy.nodes(":selected").filter(n => !n.data('isZone'));
+    if (selectedActeurs.length === 0) { alert("Sélectionne au moins un acteur pour supprimer ses zones."); return; }
+
+    // Collecter toutes les zones des acteurs sélectionnés
+    let allZones = [];
+    selectedActeurs.forEach(acteur => {
+        cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === acteur.id()).forEach(zone => {
+            // Trouver le premier nœud du groupe pour récupérer le label
+            const labelNode = cy.nodes().filter(n => n.data('groupId') === zone.data('groupId')).filter((n, i) => i === 0);
+            allZones.push({
+                groupId: zone.data('groupId'),
+                label: labelNode.data('label') || zone.data('label') || "Zone",
+                color: zone.style('border-color')
+            });
+        });
     });
+
+    // Dédupliquer par groupId
+    const seen = new Set();
+    allZones = allZones.filter(z => { if (seen.has(z.groupId)) return false; seen.add(z.groupId); return true; });
+
+    if (allZones.length === 0) { alert("Aucune zone trouvée sur les acteurs sélectionnés."); return; }
+
+    // Si une seule zone → supprimer directement
+    if (allZones.length === 1) {
+        cy.nodes().filter(n => n.data('groupId') === allZones[0].groupId).remove();
+        return;
+    }
+
+    // Plusieurs zones → popup de choix
+    const popup = document.createElement("div");
+    popup.id = "zoneDeletePopup";
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(15,18,35,0.98); padding: 24px; border: 1px solid rgba(211,143,79,0.4);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7); z-index: 9999; border-radius: 12px;
+        width: 280px; font-family: Montserrat, sans-serif; color: white; text-align: center;
+    `;
+    popup.innerHTML = `
+        <h4 style="margin:0 0 16px; color:#d38f4f; font-family:Rajdhani,sans-serif; text-transform:uppercase; font-size:14px;">Supprimer quelle zone ?</h4>
+        <div id="zoneDeleteList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;"></div>
+        <button id="zoneDeleteAll" style="width:100%; padding:9px; background:#e74c3c; color:white; border:none; border-radius:7px; cursor:pointer; font-weight:700; font-size:13px; margin-bottom:8px;">Supprimer toutes</button>
+        <button id="zoneDeleteCancel" style="width:100%; padding:9px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.12); border-radius:7px; cursor:pointer; font-size:13px;">Annuler</button>
+    `;
+    document.body.appendChild(popup);
+
+    const list = document.getElementById("zoneDeleteList");
+    allZones.forEach(z => {
+        const btn = document.createElement("button");
+        btn.style.cssText = `padding:9px 12px; background:rgba(255,255,255,0.05); color:white; border:2px solid ${z.color}; border-radius:7px; cursor:pointer; font-size:13px; text-align:left; display:flex; align-items:center; gap:8px;`;
+        btn.innerHTML = `<span style="width:12px;height:12px;border-radius:50%;background:${z.color};display:inline-block;flex-shrink:0;"></span>${z.label}`;
+        btn.addEventListener("click", () => {
+            cy.nodes().filter(n => n.data('groupId') === z.groupId).remove();
+            popup.remove();
+        });
+        list.appendChild(btn);
+    });
+
+    document.getElementById("zoneDeleteAll").addEventListener("click", () => {
+        allZones.forEach(z => cy.nodes().filter(n => n.data('groupId') === z.groupId).remove());
+        popup.remove();
+    });
+    document.getElementById("zoneDeleteCancel").addEventListener("click", () => popup.remove());
 }
  
 document.getElementById("submitToProfBtn").onclick = () => {
