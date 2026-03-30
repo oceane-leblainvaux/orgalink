@@ -34,6 +34,52 @@ function pulseNodes() {
         setTimeout(pulseNodes, 500);
     }
 }
+
+// =====================================================================
+// SOULIGNEMENT : génère une ligne SVG en background-image du nœud
+// Cytoscape.js ne supporte pas text-decoration nativement.
+// =====================================================================
+function applyUnderline(node, thickness) {
+    const label = node.data('label') || '';
+    const fontWeight = node.data('fontBoldValue') || 400;
+    const nodeW = parseFloat(node.style('width')) || 160;
+    const nodeH = parseFloat(node.style('height')) || 60;
+
+    if (thickness === 0) {
+        node.removeStyle('background-image background-width background-height background-fit background-clip background-position-x background-position-y');
+        return;
+    }
+
+    // Estimation de la largeur du texte selon la graisse
+    const charWidth = fontWeight >= 600 ? 9 : 8;
+    const textWidth = Math.min(label.length * charWidth, nodeW - 20);
+    const textX = nodeW / 2;
+    // Position Y : centre du nœud + décalage vers le bas pour se placer juste sous le texte
+    const textY = nodeH / 2 + 14;
+
+    // On utilise la couleur du nœud (texte foncé par défaut)
+    const lineColor = encodeURIComponent(node.style('color') || '#222222');
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${nodeW}" height="${nodeH}">
+        <line
+            x1="${textX - textWidth / 2}" y1="${textY}"
+            x2="${textX + textWidth / 2}" y2="${textY}"
+            stroke="${lineColor}" stroke-width="${thickness}" stroke-linecap="round"/>
+    </svg>`;
+
+    const encoded = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+
+    node.style({
+        'background-image': encoded,
+        'background-width': nodeW + 'px',
+        'background-height': nodeH + 'px',
+        'background-fit': 'none',
+        'background-clip': 'none',
+        'background-position-x': '0px',
+        'background-position-y': '0px'
+    });
+}
+// =====================================================================
  
 function getPopupFormHTML(direction) {
     const isDouble = direction === "Double";
@@ -113,7 +159,6 @@ function submitRelationDetails() {
     const styleCible = getLineStyleByImpact(impactCibleSrc);
     const uid = Date.now();
     
-    // IMPORTANT: On stocke la description ici
     const edgeData = { ...tempEdgeData, label: "", type_relation: label, direction: tempEdgeData.direction, impact_source_vers_cible: impactSrcCible, impact_cible_vers_source: impactCibleSrc, nature_relation: nature, description_relation: description, uid: uid };
     const edge = cy.add({ group: 'edges', data: edgeData });
     edge.style({ 'line-color': color, 'target-arrow-color': color, 'width': styleSrc.width, 'line-style': styleSrc.style });
@@ -142,14 +187,15 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             {
                 selector: 'edge',
-    style: { 
-        'curve-style': 'bezier', 
-        'target-arrow-shape': 'triangle', 
-        'line-color': '#999', 
-        'target-arrow-color': '#999', 
-        'width': 2, 
-        'label': '',      /* On force le label à vide pour qu'il n'écrive rien sur la flèche */
-        'font-size': '0px' /* Sécurité supplémentaire : taille de police à zéro */}
+                style: { 
+                    'curve-style': 'bezier', 
+                    'target-arrow-shape': 'triangle', 
+                    'line-color': '#999', 
+                    'target-arrow-color': '#999', 
+                    'width': 2, 
+                    'label': '',
+                    'font-size': '0px'
+                }
             },
             {
                 selector: '.hierarchie',
@@ -203,21 +249,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 const styleSrc = getLineStyleByImpact(rel.impact_source_vers_cible);
                 const styleCible = getLineStyleByImpact(rel.impact_cible_vers_source);
                 informelleElements.push({
-                    data: { id: "rel_" + rel.uid, uid: rel.uid, source: rel.from, target: rel.to, label: rel.type_relation.length <= 15 ? rel.type_relation : "", type_relation: rel.type_relation, direction: rel.direction, impact_source_vers_cible: rel.impact_source_vers_cible, impact_cible_vers_source: rel.impact_cible_vers_source, nature_relation: rel.nature_relation, description_relation: rel.description_relation, duree_relation: rel.duree_relation }, // Ajout description ici
+                    data: { id: "rel_" + rel.uid, uid: rel.uid, source: rel.from, target: rel.to, label: rel.type_relation.length <= 15 ? rel.type_relation : "", type_relation: rel.type_relation, direction: rel.direction, impact_source_vers_cible: rel.impact_source_vers_cible, impact_cible_vers_source: rel.impact_cible_vers_source, nature_relation: rel.nature_relation, description_relation: rel.description_relation, duree_relation: rel.duree_relation },
                     style: { 'line-color': color, 'target-arrow-color': color, 'width': styleSrc.width, 'line-style': styleSrc.style }
                 });
                 if (rel.direction === "Double") {
                     informelleElements.push({
-                        data: { id: "rel_" + rel.uid + "_reverse", uid: rel.uid, source: rel.to, target: rel.from, label: " ", direction: rel.direction, impact_source_vers_cible: rel.impact_cible_vers_source, impact_cible_vers_source: rel.impact_source_vers_cible, nature_relation: rel.nature_relation, description_relation: rel.description_relation, duree_relation: rel.duree_relation }, // Ajout description ici
+                        data: { id: "rel_" + rel.uid + "_reverse", uid: rel.uid, source: rel.to, target: rel.from, label: " ", direction: rel.direction, impact_source_vers_cible: rel.impact_cible_vers_source, impact_cible_vers_source: rel.impact_source_vers_cible, nature_relation: rel.nature_relation, description_relation: rel.description_relation, duree_relation: rel.duree_relation },
                         style: { 'line-color': color, 'target-arrow-color': color, 'width': styleCible.width, 'line-style': styleCible.style }
                     });
                 }
             });
             cy.add(informelleElements);
         }
+
+        // Restaurer le soulignement sur les nœuds chargés
+        cy.nodes().forEach(node => {
+            const undVal = node.data('fontUnderlineWidth');
+            if (undVal && undVal > 0) applyUnderline(node, undVal);
+        });
+
         setupMenu();
  
-        // TOOLTIP NODES (Existant)
+        // TOOLTIP NODES
         cy.on('mouseover', 'node', (event) => {
             const node = event.target;
             if (node.data('isZone')) return;
@@ -230,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         cy.on('mouseout', 'node', () => { const tooltip = document.getElementById('tooltipNode'); if (tooltip) tooltip.remove(); });
 
-        // --- NOUVEAU : TOOLTIP FLÈCHES (EDGES) ---
+        // TOOLTIP FLÈCHES (EDGES)
         cy.on('mouseover', 'edge', (event) => {
             const edge = event.target;
             if (edge.hasClass('hierarchie')) return;
@@ -265,19 +318,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             document.body.appendChild(tooltip);
-            edge.style('line-color', '#fff'); // Effet visuel au survol
+            edge.style('line-color', '#fff');
         });
 
         cy.on('mouseout', 'edge', (event) => {
             const edge = event.target;
             const tooltip = document.getElementById('tooltipEdge');
             if (tooltip) tooltip.remove();
-            
-            // Remettre la couleur d'origine selon la nature
             const color = getColorByNature(edge.data('nature_relation'));
             edge.style('line-color', color);
         });
-        // --- FIN TOOLTIP FLÈCHES ---
 
     })
     .catch(err => console.error("Erreur de chargement :", err));
@@ -287,7 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const node = e.target;
         if (node.data('isZone')) return;
 
-        // Supprimer tout ancien menu contextuel
         removeContextMenu();
 
         const renderedPos = e.renderedPosition;
@@ -313,10 +362,9 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         const currentShape    = node.style('shape') || 'round-rectangle';
-        const currentBoldVal  = node.data('fontBoldValue')  ?? 400;   // 100–900
-        const currentUndVal   = node.data('fontUnderlineWidth') ?? 0; // 0 = désactivé, 1-4 = épaisseur
+        const currentBoldVal  = node.data('fontBoldValue')  ?? 400;
+        const currentUndVal   = node.data('fontUnderlineWidth') ?? 0;
 
-        // Styles CSS pour le slider custom
         const sliderStyle = `
             width:100%; height:4px; border-radius:2px; outline:none; cursor:pointer;
             -webkit-appearance:none; appearance:none;
@@ -433,6 +481,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     node.style({ 'shape': shape, 'width': '160px', 'height': '60px' });
                 }
+                // Recalculer le soulignement après changement de forme
+                const undVal = node.data('fontUnderlineWidth') || 0;
+                if (undVal > 0) applyUnderline(node, undVal);
+
                 menu.querySelectorAll('[data-shape]').forEach(b => {
                     const active = b.dataset.shape === shape;
                     b.style.background  = active ? 'rgba(211,143,79,0.25)' : 'rgba(255,255,255,0.06)';
@@ -441,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Helper : met à jour la progression visuelle du slider (dégradé CSS)
+        // Helper : met à jour la progression visuelle du slider
         function updateSliderTrack(slider, min, max) {
             const pct = Math.round(((slider.value - min) / (max - min)) * 100);
             slider.style.setProperty('--pct', pct + '%');
@@ -458,6 +510,9 @@ document.addEventListener("DOMContentLoaded", () => {
             boldLabel.textContent  = val;
             boldLabel.style.fontWeight = val;
             updateSliderTrack(boldSlider, 100, 900);
+            // Recalculer le soulignement car la graisse influe sur la largeur du texte estimée
+            const undVal = node.data('fontUnderlineWidth') || 0;
+            if (undVal > 0) applyUnderline(node, undVal);
         });
 
         // --- Slider SOULIGNEMENT ---
@@ -467,16 +522,8 @@ document.addEventListener("DOMContentLoaded", () => {
         undSlider.addEventListener('input', () => {
             const val = parseInt(undSlider.value);
             node.data('fontUnderlineWidth', val);
-            if (val === 0) {
-                node.style('text-decoration', 'none');
-                undLabel.textContent = 'Désactivé';
-            } else {
-                node.style({
-                    'text-decoration':           'underline',
-                    'text-decoration-width':     val + 'px'
-                });
-                undLabel.textContent = val + 'px';
-            }
+            applyUnderline(node, val);
+            undLabel.textContent = val === 0 ? 'Désactivé' : val + 'px';
             updateSliderTrack(undSlider, 0, 4);
         });
 
@@ -524,8 +571,6 @@ function setupMenu() {
         }
     };
  
-    // Suivi des zones quand un acteur est déplacé
-    // On stocke la position de départ au début du drag
     cy.on('grab', 'node', (e) => {
         const node = e.target;
         if (node.data('isZone')) return;
@@ -542,7 +587,6 @@ function setupMenu() {
         const dx = node.position('x') - startPos.x;
         const dy = node.position('y') - startPos.y;
 
-        // Chercher les zones qui étaient positionnées sur ce nœud
         cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === nodeId).forEach(zone => {
             zone.position({
                 x: zone.data('_baseX') + dx,
@@ -554,7 +598,6 @@ function setupMenu() {
     cy.on('free', 'node', (e) => {
         const node = e.target;
         if (node.data('isZone')) return;
-        // Mettre à jour la base position des zones attachées
         cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === node.id()).forEach(zone => {
             zone.data('_baseX', zone.position('x'));
             zone.data('_baseY', zone.position('y'));
@@ -619,6 +662,11 @@ function setupMenu() {
                 cy.elements().remove();
                 cy.add(data.data);
                 cy.layout({ name: 'preset' }).run();
+                // Restaurer le soulignement après chargement d'un graphe sauvegardé
+                cy.nodes().forEach(node => {
+                    const undVal = node.data('fontUnderlineWidth');
+                    if (undVal && undVal > 0) applyUnderline(node, undVal);
+                });
             })
             .catch(err => { console.error(err); alert("Erreur lors du chargement."); });
     }
@@ -718,9 +766,8 @@ function creerZoneContour(type = "alliance") {
             const h = node.height();
             const idZone = groupId + "_" + i;
 
-            // Calculer l'offset selon le nombre de zones déjà existantes sur ce noeud
             const existingZones = cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === node.id());
-            const offsetStep = 14; // px entre chaque anneau
+            const offsetStep = 14;
             const offset = (existingZones.length + 1) * offsetStep;
 
             cy.add({ 
@@ -752,15 +799,12 @@ function creerZoneContour(type = "alliance") {
 function supprimerZoneContour() {
     if (document.getElementById("zoneDeletePopup")) return;
 
-    // Récupérer les acteurs sélectionnés
     const selectedActeurs = cy.nodes(":selected").filter(n => !n.data('isZone'));
     if (selectedActeurs.length === 0) { alert("Sélectionne au moins un acteur pour supprimer ses zones."); return; }
 
-    // Collecter toutes les zones des acteurs sélectionnés
     let allZones = [];
     selectedActeurs.forEach(acteur => {
         cy.nodes().filter(n => n.data('isZone') && n.data('_attachedTo') === acteur.id()).forEach(zone => {
-            // Trouver le premier nœud du groupe pour récupérer le label
             const labelNode = cy.nodes().filter(n => n.data('groupId') === zone.data('groupId')).filter((n, i) => i === 0);
             allZones.push({
                 groupId: zone.data('groupId'),
@@ -770,19 +814,16 @@ function supprimerZoneContour() {
         });
     });
 
-    // Dédupliquer par groupId
     const seen = new Set();
     allZones = allZones.filter(z => { if (seen.has(z.groupId)) return false; seen.add(z.groupId); return true; });
 
     if (allZones.length === 0) { alert("Aucune zone trouvée sur les acteurs sélectionnés."); return; }
 
-    // Si une seule zone → supprimer directement
     if (allZones.length === 1) {
         cy.nodes().filter(n => n.data('groupId') === allZones[0].groupId).remove();
         return;
     }
 
-    // Plusieurs zones → popup de choix
     const popup = document.createElement("div");
     popup.id = "zoneDeletePopup";
     popup.style.cssText = `
@@ -836,5 +877,5 @@ document.getElementById("submitToProfBtn").onclick = () => {
             alert("Graphe informel envoyé au professeur !");
             if (sessionStorage.getItem("role") === "prof") window.location.href = "../html/admin_view.html";
         } else { alert("Erreur : " + data.message); }
-    }).catch(err => { console.error("Erreur :", err); alert("Erreur lors de l’envoi du graphe."); });
+    }).catch(err => { console.error("Erreur :", err); alert("Erreur lors de l'envoi du graphe."); });
 };
