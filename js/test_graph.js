@@ -1,5 +1,10 @@
 let cy;
 let selectedTool = null;
+
+function removeContextMenu() {
+    const existing = document.getElementById('nodeContextMenu');
+    if (existing) existing.remove();
+}
 let tempFromNode = null;
 let selectedColor = null;
 let deletedRelationIds = [];
@@ -276,6 +281,218 @@ document.addEventListener("DOMContentLoaded", () => {
 
     })
     .catch(err => console.error("Erreur de chargement :", err));
+
+    // ===== MENU CONTEXTUEL CLIC DROIT SUR ACTEUR =====
+    cy.on('cxttap', 'node', function(e) {
+        const node = e.target;
+        if (node.data('isZone')) return;
+
+        // Supprimer tout ancien menu contextuel
+        removeContextMenu();
+
+        const renderedPos = e.renderedPosition;
+        const cyContainer = document.getElementById('cy');
+        const rect = cyContainer.getBoundingClientRect();
+        const x = rect.left + renderedPos.x;
+        const y = rect.top + renderedPos.y;
+
+        const menu = document.createElement('div');
+        menu.id = 'nodeContextMenu';
+        menu.style.cssText = `
+            position: fixed;
+            top: ${y}px;
+            left: ${x}px;
+            background: rgba(12, 14, 28, 0.98);
+            border: 1px solid rgba(211,143,79,0.4);
+            border-radius: 10px;
+            box-shadow: 0 16px 50px rgba(0,0,0,0.75);
+            z-index: 99999;
+            padding: 10px;
+            width: 220px;
+            font-family: Montserrat, sans-serif;
+        `;
+
+        const currentShape    = node.style('shape') || 'round-rectangle';
+        const currentBoldVal  = node.data('fontBoldValue')  ?? 400;   // 100–900
+        const currentUndVal   = node.data('fontUnderlineWidth') ?? 0; // 0 = désactivé, 1-4 = épaisseur
+
+        // Styles CSS pour le slider custom
+        const sliderStyle = `
+            width:100%; height:4px; border-radius:2px; outline:none; cursor:pointer;
+            -webkit-appearance:none; appearance:none;
+            background: linear-gradient(to right, rgba(211,143,79,0.9) 0%, rgba(211,143,79,0.9) var(--pct), rgba(255,255,255,0.12) var(--pct), rgba(255,255,255,0.12) 100%);
+        `;
+
+        const boldPct   = Math.round(((currentBoldVal - 100) / 800) * 100);
+        const undPct    = Math.round((currentUndVal / 4) * 100);
+
+        menu.innerHTML = `
+            <style>
+                #nodeContextMenu input[type=range]::-webkit-slider-thumb {
+                    -webkit-appearance:none; appearance:none;
+                    width:14px; height:14px; border-radius:50%;
+                    background:#d38f4f; cursor:pointer;
+                    box-shadow:0 0 4px rgba(0,0,0,0.5);
+                }
+                #nodeContextMenu input[type=range]::-moz-range-thumb {
+                    width:14px; height:14px; border-radius:50%;
+                    background:#d38f4f; cursor:pointer; border:none;
+                    box-shadow:0 0 4px rgba(0,0,0,0.5);
+                }
+            </style>
+
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:rgba(211,143,79,0.8); font-weight:700; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                Personnaliser l'acteur
+            </div>
+
+            <!-- FORMES -->
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:rgba(255,255,255,0.4); margin-bottom:6px; margin-top:2px;">Forme</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                ${[
+                    { key: 'round-rectangle', label: '▭', title: 'Rectangle arrondi' },
+                    { key: 'ellipse',         label: '⬭', title: 'Ovale' },
+                    { key: 'triangle',        label: '▲', title: 'Triangle' },
+                    { key: 'rectangle',       label: '▬', title: 'Rectangle' },
+                    { key: 'pentagon',        label: '⬠', title: 'Pentagone' },
+                    { key: 'diamond',         label: '◆', title: 'Losange' },
+                ].map(s => `
+                    <button data-shape="${s.key}" title="${s.title}" style="
+                        flex:1; min-width:28px; padding:6px 4px;
+                        background: ${currentShape === s.key ? 'rgba(211,143,79,0.25)' : 'rgba(255,255,255,0.06)'};
+                        border: 1px solid ${currentShape === s.key ? 'rgba(211,143,79,0.7)' : 'rgba(255,255,255,0.1)'};
+                        border-radius:5px; color:white; cursor:pointer; font-size:14px;
+                        transition:all 0.15s ease;
+                    ">${s.label}</button>
+                `).join('')}
+            </div>
+
+            <!-- GRAS -->
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:rgba(255,255,255,0.4); margin-bottom:6px;">Graisse du texte</div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span style="font-size:11px; color:rgba(255,255,255,0.35); font-weight:300; min-width:18px;">A</span>
+                <input id="ctx-bold-slider" type="range" min="100" max="900" step="100" value="${currentBoldVal}"
+                    style="${sliderStyle} --pct:${boldPct}%;"
+                >
+                <span style="font-size:13px; color:rgba(255,255,255,0.35); font-weight:900; min-width:18px; text-align:right;">A</span>
+            </div>
+            <div style="text-align:center; font-size:11px; color:rgba(211,143,79,0.7); margin-bottom:12px;">
+                <span id="ctx-bold-label" style="font-weight:${currentBoldVal};">${currentBoldVal}</span>
+            </div>
+
+            <!-- SOULIGNEMENT -->
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:rgba(255,255,255,0.4); margin-bottom:6px;">Soulignement</div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span style="font-size:11px; color:rgba(255,255,255,0.35); min-width:18px;">—</span>
+                <input id="ctx-und-slider" type="range" min="0" max="4" step="1" value="${currentUndVal}"
+                    style="${sliderStyle} --pct:${undPct}%;"
+                >
+                <span style="font-size:13px; color:rgba(255,255,255,0.35); font-weight:900; min-width:18px; text-align:right; text-decoration:underline; text-decoration-thickness:4px;">—</span>
+            </div>
+            <div style="text-align:center; font-size:11px; color:rgba(211,143,79,0.7); margin-bottom:12px;">
+                <span id="ctx-und-label">${currentUndVal === 0 ? 'Désactivé' : currentUndVal + 'px'}</span>
+            </div>
+
+            <!-- FERMER -->
+            <button id="ctx-close" style="
+                width:100%; padding:7px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+                border-radius:6px; color:rgba(255,255,255,0.4);
+                cursor:pointer; font-size:11px; font-family:Montserrat,sans-serif;
+                transition:all 0.15s ease;
+            ">Fermer</button>
+        `;
+
+        document.body.appendChild(menu);
+
+        // Réajuster si hors écran
+        const menuRect = menu.getBoundingClientRect();
+        if (menuRect.right > window.innerWidth)  menu.style.left = (x - menuRect.width) + 'px';
+        if (menuRect.bottom > window.innerHeight) menu.style.top  = (y - menuRect.height) + 'px';
+
+        // --- Boutons formes ---
+        menu.querySelectorAll('[data-shape]').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                if (node.style('shape') !== btn.dataset.shape) {
+                    btn.style.background = 'rgba(211,143,79,0.15)';
+                    btn.style.borderColor = 'rgba(211,143,79,0.4)';
+                }
+            });
+            btn.addEventListener('mouseleave', () => {
+                if (node.style('shape') !== btn.dataset.shape) {
+                    btn.style.background = 'rgba(255,255,255,0.06)';
+                    btn.style.borderColor = 'rgba(255,255,255,0.1)';
+                }
+            });
+            btn.addEventListener('click', () => {
+                const shape = btn.dataset.shape;
+                if (shape === 'triangle' || shape === 'pentagon') {
+                    node.style({ 'shape': shape, 'width': '80px', 'height': '80px' });
+                } else if (shape === 'diamond') {
+                    node.style({ 'shape': shape, 'width': '120px', 'height': '80px' });
+                } else {
+                    node.style({ 'shape': shape, 'width': '160px', 'height': '60px' });
+                }
+                menu.querySelectorAll('[data-shape]').forEach(b => {
+                    const active = b.dataset.shape === shape;
+                    b.style.background  = active ? 'rgba(211,143,79,0.25)' : 'rgba(255,255,255,0.06)';
+                    b.style.borderColor = active ? 'rgba(211,143,79,0.7)'  : 'rgba(255,255,255,0.1)';
+                });
+            });
+        });
+
+        // Helper : met à jour la progression visuelle du slider (dégradé CSS)
+        function updateSliderTrack(slider, min, max) {
+            const pct = Math.round(((slider.value - min) / (max - min)) * 100);
+            slider.style.setProperty('--pct', pct + '%');
+        }
+
+        // --- Slider GRAS ---
+        const boldSlider = document.getElementById('ctx-bold-slider');
+        const boldLabel  = document.getElementById('ctx-bold-label');
+
+        boldSlider.addEventListener('input', () => {
+            const val = parseInt(boldSlider.value);
+            node.data('fontBoldValue', val);
+            node.style('font-weight', val);
+            boldLabel.textContent  = val;
+            boldLabel.style.fontWeight = val;
+            updateSliderTrack(boldSlider, 100, 900);
+        });
+
+        // --- Slider SOULIGNEMENT ---
+        const undSlider = document.getElementById('ctx-und-slider');
+        const undLabel  = document.getElementById('ctx-und-label');
+
+        undSlider.addEventListener('input', () => {
+            const val = parseInt(undSlider.value);
+            node.data('fontUnderlineWidth', val);
+            if (val === 0) {
+                node.style('text-decoration', 'none');
+                undLabel.textContent = 'Désactivé';
+            } else {
+                node.style({
+                    'text-decoration':           'underline',
+                    'text-decoration-width':     val + 'px'
+                });
+                undLabel.textContent = val + 'px';
+            }
+            updateSliderTrack(undSlider, 0, 4);
+        });
+
+        document.getElementById('ctx-close').addEventListener('click', removeContextMenu);
+    });
+
+    // Fermer le menu si clic ailleurs
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('nodeContextMenu');
+        if (menu && !menu.contains(e.target)) removeContextMenu();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') removeContextMenu();
+    });
+    cy.on('tap', () => removeContextMenu());
+    // ===== FIN MENU CONTEXTUEL =====
 });
  
 function setupMenu() {
