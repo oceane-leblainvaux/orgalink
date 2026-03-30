@@ -71,23 +71,21 @@ filter: brightness(0) invert(1);
 .login-icon span,
 .login-icon button {
 color: #FFFFFF;
-font-size: 1rem;
+font-size: 0.85rem;
 font-weight: 600;
 text-decoration: none;
-text-transform: uppercase;
 background: none;
 border: none;
 cursor: pointer;
 font-family: "Montserrat", sans-serif;
-transition: color 0.3s ease, transform 0.2s;
+transition: color 0.2s;
 white-space: nowrap;
 }
 
 .login-icon a:hover,
 .login-icon span:hover,
 .login-icon button:hover {
-color: #8A2BE2;
-transform: translateY(-2px);
+color: #3bbbd1;
 }
 
 /* Séparateur visuel discret entre "Bonjour X" et "Se déconnecter" */

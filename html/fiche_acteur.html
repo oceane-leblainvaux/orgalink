@@ -3,85 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiche Acteur</title>
+  <title>Fiche Acteur – ORFI</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/fiche_acteur.css">
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    .radar-legend {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-    }
-    .legend-item {
-      display: inline-block;
-      margin: 0 12px;
-      font-weight: bold;
-    }
-    .legend-dot {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-    .dot-positive { background-color: #4caf50; }
-    .dot-negative { background-color: #f44336; }
-    .dot-neutral  { background-color: #c2ef1e; }
-  </style>
 </head>
-<body>
-  <!-- HEADER -->
-  <div class="header">
-    <div class="sides">
-        <a href="../html/index.html" class="logo">ORFI</a>
-    </div>
-    <div class="sides">
-        <div id="authButtons" class="login-icon"></div>            
-    </div>
-    <div class="sides">
-        <a href="#" class="menu" id="openMenu"></a>
-    </div>
+
+<body class="org-background">
+
+<!-- ===== HEADER (IDENTIQUE ORGANIGRAMME) ===== -->
+<div class="header">
+  <div class="sides">
+    <div id="authButtons" class="login-icon"></div>
+  </div>
+
+  <nav class="header-nav">
+    <a href="../html/index.html">Accueil</a>
+    <a href="../html/dashboard.html">Tableau</a>
+    <a href="../html/organigramme.html">Organigramme formel</a>
+    <a href="../html/admin_view.html">Listes de graphiques</a>
+    <a href="../html/test_graph.html">Graphique informel</a>
+  </nav>
 </div>
 
-<!-- MENU DÉROULANT -->
-<div id="menuDialog" class="custom-dialog">
-  <a href="../html/index.html">Accueil</a>
-  <a href="../html/dashboard.html">Tableau</a>
-  <a href="../html/organigramme.html">Organigramme formel</a>
-  <a href="../html/about.html">À propos</a>
-  <a href="../html/admin_view.html">Visualisation du graphique des élèves</a>
-  <a href="../html/test_graph.html">Graphique informel</a>
-</div>
+<!-- ===== CONTENU ===== -->
 
+<h2 class="org-title">Fiche acteur</h2>
+
+<div class="org-box">
+
+  <!-- SÉLECTEUR -->
   <div class="section">
     <h2>Sélectionnez un acteur :</h2>
     <select id="selectActeur">
-      <option value="">-- Choisissez un acteur --</option>
+      <option value="">— Choisissez un acteur —</option>
     </select>
   </div>
 
+  <!-- FICHE -->
   <div id="ficheContainer" style="display:none">
+
     <h1>Fiche de l'acteur : <span id="acteurNom">[Nom]</span></h1>
 
+    <!-- Radar -->
     <div class="section">
       <h2>Radar des Relations Informelles</h2>
       <canvas id="radarChart" width="600" height="400"></canvas>
 
-    
       <div class="radar-legend">
-        <div class="legend-item"><span class="legend-dot dot-positive"></span>Positive</div>
-        <div class="legend-item"><span class="legend-dot dot-negative"></span>Négative</div>
-        <div class="legend-item"><span class="legend-dot dot-neutral"></span>Neutre</div>
-        <br><br>
-        <div><strong>Radar :</strong> Relations informelles en lien avec l'acteur sélectionné, avec couleur selon la nature et longueur des segments selon intensité (+++ et --- -> longueur de 3...)  .</div>
-      </div>
-    </div>
 
+  <div class="legend-badges">
+    <span class="legend-item positive">
+      <span class="legend-dot"></span> Positive
+    </span>
+
+    <span class="legend-item negative">
+      <span class="legend-dot"></span> Négative
+    </span>
+
+    <span class="legend-item neutral">
+      <span class="legend-dot"></span> Neutre
+    </span>
+  </div>
+
+  <div class="legend-description">
+    <strong>Radar des relations :</strong><br>
+    La couleur indique la nature de la relation et la longueur représente son intensité.
+  </div>
+
+</div>
+
+    <!-- Table -->
     <div class="section">
-      <h2> Détails des Relations</h2>
+      <h2 class="section-title">Détails des relations</h2>
       <table>
         <thead>
           <tr>
@@ -96,23 +97,26 @@
         <tbody id="tableRelations"></tbody>
       </table>
     </div>
+
   </div>
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-content">
-        <p>&copy; 2026 Orgalink. Tous droits réservés.</p>
-        <nav>
-            <a href="../html/about.html">À propos</a> |
-            <a href="#">Organisation Relationnelle</a> |
-            <a href="../html/contact.html">Contact</a>
-        </nav>
-    </div>
+
+</div>
+
+<!-- ===== FOOTER (IDENTIQUE ORGANIGRAMME) ===== -->
+<footer>
+  <div class="footer-content">
+    <p>&copy; 2026 Orgalink.Tous droits réservés.</p>
+    <nav>
+      <a href="../html/about.html">À propos de nous</a> |
+      <a href="#">Mentions Légales</a> |
+      <a href="../html/contact.html">Contact</a>
+    </nav>
+  </div>
 </footer>
 
-
-
-<script src="../js/fiche_acteur.js"></script>
+<!-- Scripts -->
 <script src="../js/script.js"></script>
+<script src="../js/fiche_acteur.js"></script>
 
 </body>
 </html>
