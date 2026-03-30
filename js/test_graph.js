@@ -50,22 +50,19 @@ function applyUnderline(node, thickness) {
         return;
     }
 
-    // Estimation de la largeur du texte selon la graisse
     const charWidth = fontWeight >= 600 ? 9 : 8;
     const textWidth = Math.min(label.length * charWidth, nodeW - 20);
     const textX = nodeW / 2;
-    // Position Y : centre du nœud + décalage vers le bas pour se placer juste sous le texte
     const textY = nodeH / 2 + 14;
 
-    // Cytoscape retourne la couleur en format "rgb(r, g, b)" — on la convertit en hex pour le SVG
+    // Cytoscape retourne la couleur en "rgb(r, g, b)" — on convertit en hex
     function cyColorToHex(cyColor) {
         if (!cyColor) return '#222222';
         if (cyColor.startsWith('#')) return cyColor;
         const match = cyColor.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
         if (match) {
             return '#' + [match[1], match[2], match[3]]
-                .map(n => parseInt(n).toString(16).padStart(2, '0'))
-                .join('');
+                .map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
         }
         return '#222222';
     }
@@ -88,6 +85,47 @@ function applyUnderline(node, thickness) {
         'background-position-x': '0px',
         'background-position-y': '0px'
     });
+}
+// =====================================================================
+
+// =====================================================================
+// ADAPTATION DE LA TAILLE DU NŒUD AU LABEL
+// =====================================================================
+function fitNodeToLabel(node, shape) {
+    const label    = node.data('label') || '';
+    const weight   = node.data('fontBoldValue') || 400;
+    const fontSize = 16;
+
+    const charW = weight >= 700 ? fontSize * 0.65
+                : weight >= 500 ? fontSize * 0.58
+                :                 fontSize * 0.52;
+
+    const rawTextW = label.length * charW;
+    const paddingH = 32;
+    const minW     = 80;
+    const maxW     = 280;
+    const textW    = Math.max(minW, Math.min(rawTextW + paddingH, maxW));
+
+    const baseH  = 60;
+    const lines  = Math.ceil(rawTextW / (maxW - paddingH));
+    const lineH  = fontSize * 1.4;
+    const totalH = Math.max(baseH, lines * lineH + 20);
+
+    const s = shape || node.style('shape') || 'round-rectangle';
+
+    if (s === 'triangle' || s === 'pentagon') {
+        const side = Math.max(textW, totalH, 80);
+        node.style({ width: side + 'px', height: side + 'px' });
+    } else if (s === 'diamond') {
+        node.style({ width: Math.max(textW * 1.3, 100) + 'px', height: Math.max(totalH * 1.4, 80) + 'px' });
+    } else if (s === 'ellipse') {
+        node.style({ width: Math.max(textW * 1.1, 100) + 'px', height: Math.max(totalH, 50) + 'px' });
+    } else {
+        node.style({ width: textW + 'px', height: totalH + 'px' });
+    }
+
+    const undVal = node.data('fontUnderlineWidth') || 0;
+    if (undVal > 0) applyUnderline(node, undVal);
 }
 // =====================================================================
  
@@ -272,8 +310,10 @@ document.addEventListener("DOMContentLoaded", () => {
             cy.add(informelleElements);
         }
 
-        // Restaurer le soulignement sur les nœuds chargés
+        // Adapter la taille des nœuds acteurs à leur label + restaurer le soulignement
         cy.nodes().forEach(node => {
+            if (node.data('isZone')) return;
+            fitNodeToLabel(node);
             const undVal = node.data('fontUnderlineWidth');
             if (undVal && undVal > 0) applyUnderline(node, undVal);
         });
@@ -484,16 +524,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             btn.addEventListener('click', () => {
                 const shape = btn.dataset.shape;
-                if (shape === 'triangle' || shape === 'pentagon') {
-                    node.style({ 'shape': shape, 'width': '80px', 'height': '80px' });
-                } else if (shape === 'diamond') {
-                    node.style({ 'shape': shape, 'width': '120px', 'height': '80px' });
-                } else {
-                    node.style({ 'shape': shape, 'width': '160px', 'height': '60px' });
-                }
-                // Recalculer le soulignement après changement de forme
-                const undVal = node.data('fontUnderlineWidth') || 0;
-                if (undVal > 0) applyUnderline(node, undVal);
+                node.style('shape', shape);
+                // Adapter la taille au label pour la nouvelle forme
+                fitNodeToLabel(node, shape);
 
                 menu.querySelectorAll('[data-shape]').forEach(b => {
                     const active = b.dataset.shape === shape;
@@ -520,9 +553,8 @@ document.addEventListener("DOMContentLoaded", () => {
             boldLabel.textContent  = val;
             boldLabel.style.fontWeight = val;
             updateSliderTrack(boldSlider, 100, 900);
-            // Recalculer le soulignement car la graisse influe sur la largeur du texte estimée
-            const undVal = node.data('fontUnderlineWidth') || 0;
-            if (undVal > 0) applyUnderline(node, undVal);
+            // Recalculer la taille du nœud car la graisse influe sur la largeur estimée
+            fitNodeToLabel(node);
         });
 
         // --- Slider SOULIGNEMENT ---
@@ -672,8 +704,10 @@ function setupMenu() {
                 cy.elements().remove();
                 cy.add(data.data);
                 cy.layout({ name: 'preset' }).run();
-                // Restaurer le soulignement après chargement d'un graphe sauvegardé
+                // Adapter la taille + restaurer le soulignement après chargement d'un graphe sauvegardé
                 cy.nodes().forEach(node => {
+                    if (node.data('isZone')) return;
+                    fitNodeToLabel(node);
                     const undVal = node.data('fontUnderlineWidth');
                     if (undVal && undVal > 0) applyUnderline(node, undVal);
                 });
