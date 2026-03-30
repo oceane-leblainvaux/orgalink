@@ -18,7 +18,7 @@
 
 <body class="org-background">
 
-<!-- ===== HEADER (IDENTIQUE ORGANIGRAMME) ===== -->
+<!-- ===== HEADER ===== -->
 <div class="header">
   <div class="sides">
     <div id="authButtons" class="login-icon"></div>
@@ -56,56 +56,65 @@
     <div class="section">
       <h2>Radar des Relations Informelles</h2>
       <canvas id="radarChart" width="600" height="400"></canvas>
-
-      <div class="radar-legend">
-
-  <div class="legend-badges">
-    <span class="legend-item positive">
-      <span class="legend-dot"></span> Positive
-    </span>
-
-    <span class="legend-item negative">
-      <span class="legend-dot"></span> Négative
-    </span>
-
-    <span class="legend-item neutral">
-      <span class="legend-dot"></span> Neutre
-    </span>
-  </div>
-
-  <div class="legend-description">
-    <strong>Radar des relations :</strong><br>
-    La couleur indique la nature de la relation et la longueur représente son intensité.
-  </div>
-
-</div>
-
-    <!-- Table -->
-    <div class="section">
-      <h2 class="section-title">Détails des relations</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Relation avec</th>
-            <th>Type</th>
-            <th>Nature</th>
-            <th>Impact (→)</th>
-            <th>Impact (←)</th>
-            <th>Durée (mois)</th>
-          </tr>
-        </thead>
-        <tbody id="tableRelations"></tbody>
-      </table>
     </div>
 
+    <!-- ===== NOUVELLE PARTIE AMÉLIORÉE ===== -->
+    <div class="section relations-card">
+
+      <!-- LÉGENDE -->
+      <div class="relations-legend">
+        
+        <div class="legend-items">
+          <span class="legend-item positive">
+            <span class="dot"></span> Positive
+          </span>
+
+          <span class="legend-item negative">
+            <span class="dot"></span> Négative
+          </span>
+
+          <span class="legend-item neutral">
+            <span class="dot"></span> Neutre
+          </span>
+        </div>
+
+        <p class="legend-text">
+          <strong>Radar des relations :</strong>
+          La couleur indique la nature de la relation et la longueur représente son intensité.
+        </p>
+
+      </div>
+
+      <!-- TABLE -->
+      <div class="relations-table">
+        <h2 class="section-title">Détails des relations</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Relation avec</th>
+              <th>Type</th>
+              <th>Nature</th>
+              <th>Impact →</th>
+              <th>Impact ←</th>
+              <th>Durée (mois)</th>
+            </tr>
+          </thead>
+          <tbody id="tableRelations"></tbody>
+        </table>
+      </div>
+
+    </div>
+    <!-- ===== FIN MODIF ===== -->
+
   </div>
 
 </div>
 
-<!-- ===== FOOTER (IDENTIQUE ORGANIGRAMME) ===== -->
+<!-- ===== FOOTER ===== -->
 <footer>
   <div class="footer-content">
-    <p>&copy; 2026 Orgalink.Tous droits réservés.</p>
+    <p>&copy; 2026 Orgalink. Tous droits réservés.</p>
     <nav>
       <a href="../html/about.html">À propos de nous</a> |
       <a href="#">Mentions Légales</a> |
