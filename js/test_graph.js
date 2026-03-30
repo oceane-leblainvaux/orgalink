@@ -449,7 +449,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${[
                     { key: 'round-rectangle', label: '▭', title: 'Rectangle arrondi' },
                     { key: 'ellipse',         label: '⬭', title: 'Ovale' },
-                    { key: 'triangle',        label: '▲', title: 'Triangle' },
                     { key: 'rectangle',       label: '▬', title: 'Rectangle' },
                     { key: 'pentagon',        label: '⬠', title: 'Pentagone' },
                     { key: 'diamond',         label: '◆', title: 'Losange' },
