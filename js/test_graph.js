@@ -57,17 +57,27 @@ function applyUnderline(node, thickness) {
     // Position Y : centre du nœud + décalage vers le bas pour se placer juste sous le texte
     const textY = nodeH / 2 + 14;
 
-    // On utilise la couleur du nœud (texte foncé par défaut)
-    const lineColor = encodeURIComponent(node.style('color') || '#222222');
+    // Cytoscape retourne la couleur en format "rgb(r, g, b)" — on la convertit en hex pour le SVG
+    function cyColorToHex(cyColor) {
+        if (!cyColor) return '#222222';
+        if (cyColor.startsWith('#')) return cyColor;
+        const match = cyColor.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+        if (match) {
+            return '#' + [match[1], match[2], match[3]]
+                .map(n => parseInt(n).toString(16).padStart(2, '0'))
+                .join('');
+        }
+        return '#222222';
+    }
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${nodeW}" height="${nodeH}">
-        <line
-            x1="${textX - textWidth / 2}" y1="${textY}"
-            x2="${textX + textWidth / 2}" y2="${textY}"
-            stroke="${lineColor}" stroke-width="${thickness}" stroke-linecap="round"/>
-    </svg>`;
+    const lineColor = cyColorToHex(node.style('color'));
 
-    const encoded = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${nodeW}' height='${nodeH}'>`
+        + `<line x1='${textX - textWidth / 2}' y1='${textY}' x2='${textX + textWidth / 2}' y2='${textY}' `
+        + `stroke='${lineColor}' stroke-width='${thickness}' stroke-linecap='round'/>`
+        + `</svg>`;
+
+    const encoded = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 
     node.style({
         'background-image': encoded,
