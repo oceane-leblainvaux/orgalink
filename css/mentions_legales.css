@@ -1,0 +1,116 @@
+/* ===== MENTIONS LÉGALES ===== */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: url('../image/image_fond.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+    background-color: #1B2030 !important;
+    color: white;
+}
+
+.mentions-wrapper {
+    flex: 1;
+    max-width: 860px;
+    margin: 60px auto 80px auto;
+    padding: 0 24px;
+    width: 100%;
+}
+
+.mentions-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #d38f4f;
+}
+
+.mentions-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #b0bcd4;
+    margin-bottom: 48px;
+}
+
+.mentions-section {
+    background: rgba(27, 32, 48, 0.92);
+    border: 1px solid rgba(113, 175, 246, 0.25);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.mentions-section h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #71aff6;
+    margin: 0 0 14px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mentions-section h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #71aff6;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.mentions-section p,
+.mentions-section li {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: #c8d8f0;
+    margin: 0 0 8px 0;
+}
+
+.mentions-section strong {
+    color: #ffffff;
+}
+
+.mentions-section ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.mentions-section a {
+    color: #71aff6;
+    text-decoration: none;
+}
+
+.mentions-section a:hover {
+    text-decoration: underline;
+    color: #9ecaff;
+}
+
+.mentions-section em {
+    color: #7a90b0;
+    font-size: 0.85rem;
+}
+
+.tag {
+    display: inline-block;
+    background: rgba(113, 175, 246, 0.15);
+    color: #71aff6;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(113, 175, 246, 0.3);
+}
