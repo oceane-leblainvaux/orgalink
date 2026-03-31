@@ -581,6 +581,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     cy.on('tap', () => removeContextMenu());
     // ===== FIN MENU CONTEXTUEL =====
+
+    // ===== FICHE ACTEUR (DOUBLE-CLIC) =====
+    cy.on('dbltap', 'node', function(e) {
+        const node = e.target;
+        if (node.data('isZone')) return;
+        removeContextMenu();
+        openFicheActeur(node);
+    });
+    // ===== FIN FICHE ACTEUR =====
 });
  
 function setupMenu() {
@@ -922,3 +931,385 @@ document.getElementById("submitToProfBtn").onclick = () => {
         } else { alert("Erreur : " + data.message); }
     }).catch(err => { console.error("Erreur :", err); alert("Erreur lors de l'envoi du graphe."); });
 };
+
+// =====================================================================
+// FICHE ACTEUR — double-clic sur un nœud
+// =====================================================================
+function openFicheActeur(node) {
+    const existing = document.getElementById('ficheActeurOverlay');
+    if (existing) existing.remove();
+
+    const label       = node.data('label')          || '';
+    const role        = node.data('role_entreprise') || '';
+    const age         = node.data('age')             || '';
+    const secteur     = node.data('secteur')         || '';
+    const extraFields = node.data('extraFields')     || [];
+
+    // Bulle initiale (informations fixes)
+    const fixedBubbles = [
+        { icon: '👤', key: 'label',            label: 'Nom',     value: label,   editable: false },
+        { icon: '💼', key: 'role_entreprise',  label: 'Rôle',    value: role,    editable: true  },
+        { icon: '🎂', key: 'age',              label: 'Âge',     value: age,     editable: true  },
+        { icon: '🏢', key: 'secteur',          label: 'Secteur', value: secteur, editable: true  },
+    ];
+
+    // Couleur accent par secteur (reprend la palette du panneau)
+    const sectorColors = ['#bdc3c7','#58B19F','#f8c291','#82ccdd','#f6b93b','#F97F51','#a29bfe','#ff7675'];
+    const nodeColor = node.style('background-color') || '#d6d8db';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ficheActeurOverlay';
+    overlay.style.cssText = `
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 100000;
+        display: flex; align-items: center; justify-content: center;
+        backdrop-filter: blur(3px);
+        animation: ficheOverlayIn 0.18s ease;
+    `;
+
+    overlay.innerHTML = `
+    <style>
+        @keyframes ficheOverlayIn { from { opacity:0 } to { opacity:1 } }
+        @keyframes ficheCardIn    { from { opacity:0; transform:scale(0.92) translateY(18px) } to { opacity:1; transform:scale(1) translateY(0) } }
+        @keyframes bubbleIn       { from { opacity:0; transform:scale(0.7) } to { opacity:1; transform:scale(1) } }
+
+        #ficheCard {
+            background: rgba(12,14,28,0.98);
+            border: 1px solid rgba(211,143,79,0.35);
+            border-radius: 18px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+            width: 520px; max-width: 95vw;
+            max-height: 90vh; overflow-y: auto;
+            padding: 28px 28px 22px;
+            font-family: Montserrat, sans-serif;
+            color: white;
+            animation: ficheCardIn 0.22s cubic-bezier(.34,1.56,.64,1);
+            position: relative;
+        }
+        #ficheCard::-webkit-scrollbar { width: 4px; }
+        #ficheCard::-webkit-scrollbar-track { background: transparent; }
+        #ficheCard::-webkit-scrollbar-thumb { background: rgba(211,143,79,0.3); border-radius: 4px; }
+
+        .fiche-avatar {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: ${nodeColor};
+            border: 3px solid rgba(211,143,79,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .fiche-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+        .fiche-name   { font-family: Rajdhani, sans-serif; font-size: 22px; font-weight: 700; color: #d38f4f; letter-spacing: 0.04em; }
+        .fiche-id     { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+        .fiche-section-title {
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+            color: rgba(211,143,79,0.7); font-weight: 700;
+            margin: 18px 0 10px; padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .bubbles-grid {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 4px;
+        }
+
+        .bubble {
+            display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 10px 14px;
+            min-width: 110px; flex: 1;
+            cursor: default;
+            transition: border-color 0.15s, background 0.15s;
+            animation: bubbleIn 0.25s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        .bubble.editable { cursor: pointer; }
+        .bubble.editable:hover {
+            background: rgba(211,143,79,0.08);
+            border-color: rgba(211,143,79,0.4);
+        }
+        .bubble-icon  { font-size: 16px; margin-bottom: 4px; }
+        .bubble-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); margin-bottom: 3px; }
+        .bubble-value { font-size: 13px; font-weight: 600; color: #fff; word-break: break-word; }
+        .bubble-value.empty { color: rgba(255,255,255,0.25); font-style: italic; font-weight: 400; }
+        .bubble-edit-hint { font-size: 9px; color: rgba(211,143,79,0.5); margin-top: 4px; }
+
+        .bubble-input-wrap {
+            display: flex; flex-direction: column;
+            background: rgba(211,143,79,0.08);
+            border: 1px solid rgba(211,143,79,0.5);
+            border-radius: 14px;
+            padding: 10px 14px;
+            min-width: 110px; flex: 1;
+            animation: bubbleIn 0.18s ease both;
+        }
+        .bubble-input-wrap input, .bubble-input-wrap textarea {
+            background: transparent; border: none; outline: none;
+            color: white; font-family: Montserrat, sans-serif;
+            font-size: 13px; font-weight: 600;
+            width: 100%; resize: none;
+            padding: 0; margin-top: 3px;
+        }
+        .bubble-input-wrap textarea { min-height: 52px; }
+
+        .extra-bubble-add {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px dashed rgba(255,255,255,0.18);
+            border-radius: 14px; padding: 10px 14px;
+            min-width: 110px; flex: 1;
+            cursor: pointer; color: rgba(255,255,255,0.35);
+            font-size: 12px;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+        }
+        .extra-bubble-add:hover {
+            border-color: rgba(211,143,79,0.5);
+            color: rgba(211,143,79,0.8);
+            background: rgba(211,143,79,0.06);
+        }
+
+        .fiche-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .fiche-btn-save {
+            flex: 1; padding: 10px;
+            background: linear-gradient(135deg,#d38f4f,#b8762f);
+            color: white; border: none; border-radius: 9px;
+            cursor: pointer; font-family: Montserrat, sans-serif;
+            font-weight: 700; font-size: 13px;
+            transition: opacity 0.15s;
+        }
+        .fiche-btn-save:hover { opacity: 0.88; }
+        .fiche-btn-cancel {
+            flex: 1; padding: 10px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 9px; cursor: pointer;
+            font-family: Montserrat, sans-serif; font-size: 13px;
+            transition: background 0.15s;
+        }
+        .fiche-btn-cancel:hover { background: rgba(255,255,255,0.09); }
+        .fiche-btn-close {
+            position: absolute; top: 14px; right: 14px;
+            background: rgba(255,255,255,0.06); border: none;
+            color: rgba(255,255,255,0.4); width: 28px; height: 28px;
+            border-radius: 50%; cursor: pointer; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+        .fiche-btn-close:hover { background: rgba(211,143,79,0.2); color: #d38f4f; }
+    </style>
+
+    <div id="ficheCard">
+        <button class="fiche-btn-close" id="ficheClose">✕</button>
+
+        <div class="fiche-header">
+            <div class="fiche-avatar">👤</div>
+            <div>
+                <div class="fiche-name">${label}</div>
+                <div class="fiche-id">Acteur · ${node.id()}</div>
+            </div>
+        </div>
+
+        <!-- INFOS FIXES -->
+        <div class="fiche-section-title">Informations</div>
+        <div class="bubbles-grid" id="fiche-fixed-bubbles"></div>
+
+        <!-- INFOS SUPPLÉMENTAIRES -->
+        <div class="fiche-section-title">Champs supplémentaires</div>
+        <div class="bubbles-grid" id="fiche-extra-bubbles"></div>
+
+        <div class="fiche-actions">
+            <button class="fiche-btn-save"   id="ficheSave">✓ Enregistrer</button>
+            <button class="fiche-btn-cancel" id="ficheCancel">Annuler</button>
+        </div>
+    </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // --- Rendu des bulles fixes ---
+    const fixedGrid = document.getElementById('fiche-fixed-bubbles');
+
+    fixedBubbles.forEach((b, i) => {
+        if (b.key === 'label') return; // nom déjà dans le header
+        const wrap = document.createElement('div');
+        wrap.className = 'bubble editable';
+        wrap.style.animationDelay = (i * 0.04) + 's';
+        wrap.dataset.key = b.key;
+        wrap.dataset.value = b.value;
+        wrap.innerHTML = `
+            <div class="bubble-icon">${b.icon}</div>
+            <div class="bubble-label">${b.label}</div>
+            <div class="bubble-value ${b.value ? '' : 'empty'}">${b.value || 'Non renseigné'}</div>
+            <div class="bubble-edit-hint">✎ Cliquer pour modifier</div>
+        `;
+        wrap.addEventListener('click', () => inlineEditBubble(wrap, b.label, b.key, false));
+        fixedGrid.appendChild(wrap);
+    });
+
+    // --- Rendu des bulles extra ---
+    const extraGrid = document.getElementById('fiche-extra-bubbles');
+
+    function renderExtraBubbles() {
+        extraGrid.innerHTML = '';
+        const currentExtras = node.data('extraFields') || [];
+        currentExtras.forEach((f, i) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'bubble editable';
+            wrap.style.animationDelay = (i * 0.04) + 's';
+            wrap.dataset.extraIndex = i;
+            wrap.innerHTML = `
+                <div class="bubble-icon">📝</div>
+                <div class="bubble-label">${f.label}</div>
+                <div class="bubble-value ${f.value ? '' : 'empty'}">${f.value || 'Vide'}</div>
+                <div class="bubble-edit-hint">✎ Modifier · 🗑 <span class="del-extra" style="cursor:pointer;color:rgba(231,76,60,0.6);">Supprimer</span></div>
+            `;
+            wrap.querySelector('.del-extra').addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                const extras = [...(node.data('extraFields') || [])];
+                extras.splice(i, 1);
+                node.data('extraFields', extras);
+                renderExtraBubbles();
+            });
+            wrap.addEventListener('click', (ev) => {
+                if (ev.target.classList.contains('del-extra')) return;
+                inlineEditBubble(wrap, f.label, null, true, i);
+            });
+            extraGrid.appendChild(wrap);
+        });
+
+        // Bouton "Ajouter"
+        const addBtn = document.createElement('div');
+        addBtn.className = 'extra-bubble-add';
+        addBtn.innerHTML = '＋ Ajouter un champ';
+        addBtn.addEventListener('click', () => addNewExtraField());
+        extraGrid.appendChild(addBtn);
+    }
+
+    renderExtraBubbles();
+
+    // --- Édition inline d'une bulle ---
+    function inlineEditBubble(wrap, fieldLabel, dataKey, isExtra, extraIndex) {
+        const isTextarea = dataKey === null || fieldLabel === 'Notes';
+        wrap.className = 'bubble-input-wrap';
+        wrap.innerHTML = `
+            <div class="bubble-label">${fieldLabel}</div>
+            ${isTextarea
+                ? `<textarea id="bubbleInput" rows="3">${isExtra ? (node.data('extraFields')[extraIndex]?.value || '') : (node.data(dataKey) || '')}</textarea>`
+                : `<input id="bubbleInput" type="text" value="${isExtra ? (node.data('extraFields')[extraIndex]?.value || '') : (node.data(dataKey) || '')}">`
+            }
+            <div style="display:flex;gap:6px;margin-top:6px;">
+                <button id="bubbleConfirm" style="flex:1;padding:4px 8px;background:rgba(211,143,79,0.7);border:none;border-radius:6px;color:white;cursor:pointer;font-size:11px;font-family:Montserrat,sans-serif;">✓</button>
+                <button id="bubbleCancel"  style="flex:1;padding:4px 8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(255,255,255,0.5);cursor:pointer;font-size:11px;font-family:Montserrat,sans-serif;">✕</button>
+            </div>
+        `;
+        const input = wrap.querySelector('#bubbleInput');
+        input.focus();
+
+        wrap.querySelector('#bubbleConfirm').addEventListener('click', () => {
+            const val = input.value.trim();
+            if (isExtra) {
+                const extras = [...(node.data('extraFields') || [])];
+                extras[extraIndex].value = val;
+                node.data('extraFields', extras);
+                renderExtraBubbles();
+            } else {
+                node.data(dataKey, val);
+                wrap.className = 'bubble editable';
+                wrap.dataset.value = val;
+                wrap.innerHTML = `
+                    <div class="bubble-icon">${fixedBubbles.find(b=>b.key===dataKey)?.icon || '📌'}</div>
+                    <div class="bubble-label">${fieldLabel}</div>
+                    <div class="bubble-value ${val ? '' : 'empty'}">${val || 'Non renseigné'}</div>
+                    <div class="bubble-edit-hint">✎ Cliquer pour modifier</div>
+                `;
+                wrap.addEventListener('click', () => inlineEditBubble(wrap, fieldLabel, dataKey, false));
+            }
+        });
+
+        wrap.querySelector('#bubbleCancel').addEventListener('click', () => {
+            if (isExtra) { renderExtraBubbles(); return; }
+            const val = node.data(dataKey) || '';
+            wrap.className = 'bubble editable';
+            wrap.innerHTML = `
+                <div class="bubble-icon">${fixedBubbles.find(b=>b.key===dataKey)?.icon || '📌'}</div>
+                <div class="bubble-label">${fieldLabel}</div>
+                <div class="bubble-value ${val ? '' : 'empty'}">${val || 'Non renseigné'}</div>
+                <div class="bubble-edit-hint">✎ Cliquer pour modifier</div>
+            `;
+            wrap.addEventListener('click', () => inlineEditBubble(wrap, fieldLabel, dataKey, false));
+        });
+    }
+
+    // --- Ajout d'un nouveau champ extra ---
+    function addNewExtraField() {
+        const popup = document.createElement('div');
+        popup.style.cssText = `
+            position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+            background:rgba(12,14,28,0.99);border:1px solid rgba(211,143,79,0.4);
+            border-radius:12px;padding:20px;z-index:200001;width:280px;
+            font-family:Montserrat,sans-serif;color:white;
+            box-shadow:0 16px 50px rgba(0,0,0,0.8);
+        `;
+        popup.innerHTML = `
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(211,143,79,0.8);font-weight:700;margin-bottom:12px;">Nouveau champ</div>
+            <input id="newFieldLabel" type="text" placeholder="Nom du champ (ex: LinkedIn, Objectif…)"
+                style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:white;font-family:Montserrat,sans-serif;font-size:13px;box-sizing:border-box;margin-bottom:10px;">
+            <input id="newFieldValue" type="text" placeholder="Valeur (optionnel)"
+                style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:white;font-family:Montserrat,sans-serif;font-size:13px;box-sizing:border-box;margin-bottom:14px;">
+            <div style="display:flex;gap:8px;">
+                <button id="newFieldOk" style="flex:1;padding:9px;background:linear-gradient(135deg,#d38f4f,#b8762f);color:white;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:13px;font-family:Montserrat,sans-serif;">Ajouter</button>
+                <button id="newFieldCancel" style="flex:1;padding:9px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:7px;cursor:pointer;font-size:13px;font-family:Montserrat,sans-serif;">Annuler</button>
+            </div>
+        `;
+        document.body.appendChild(popup);
+        document.getElementById('newFieldLabel').focus();
+
+        document.getElementById('newFieldOk').addEventListener('click', () => {
+            const lbl = document.getElementById('newFieldLabel').value.trim();
+            const val = document.getElementById('newFieldValue').value.trim();
+            if (!lbl) { document.getElementById('newFieldLabel').style.borderColor = '#e74c3c'; return; }
+            const extras = [...(node.data('extraFields') || [])];
+            extras.push({ label: lbl, value: val });
+            node.data('extraFields', extras);
+            popup.remove();
+            renderExtraBubbles();
+        });
+        document.getElementById('newFieldCancel').addEventListener('click', () => popup.remove());
+    }
+
+    // --- Boutons principaux ---
+    document.getElementById('ficheClose').addEventListener('click', () => overlay.remove());
+    document.getElementById('ficheCancel').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    document.addEventListener('keydown', function escFiche(e) {
+        if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escFiche); }
+    });
+
+    document.getElementById('ficheSave').addEventListener('click', () => {
+        // Persist dans node.data — les données sont déjà mises à jour en temps réel
+        // On peut ici envoyer au serveur si nécessaire
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+            const payload = {
+                id_acteur: node.id().replace('act_', ''),
+                role_entreprise: node.data('role_entreprise'),
+                age: node.data('age'),
+                secteur: node.data('secteur'),
+                extra_fields: node.data('extraFields') || []
+            };
+            fetch('../php/update_acteur.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(() => {}); // silencieux si l'endpoint n'existe pas encore
+        }
+
+        // Feedback visuel
+        const btn = document.getElementById('ficheSave');
+        btn.textContent = '✓ Sauvegardé !';
+        btn.style.background = 'linear-gradient(135deg,#2ecc71,#27ae60)';
+        setTimeout(() => overlay.remove(), 800);
+    });
+}
