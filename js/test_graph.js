@@ -440,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </style>
 
             <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:rgba(211,143,79,0.8); font-weight:700; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.08);">
-                Personnaliser l'acteur
+                ${node.data('nodeType') === 'object' ? 'Personnaliser l\'objet' : 'Personnaliser l\'acteur'}
             </div>
 
             <!-- FORMES -->
@@ -603,6 +603,7 @@ function setupMenu() {
         tempFromNode = null; 
         cy.nodes().unselect();
     };
+    document.getElementById("addObjectBtn").onclick = () => { ajouterObjet(); };
     document.getElementById("deleteSelectedBtn").onclick = () => {
         if (confirm("Voulez-vous supprimer cette relation ?")) {
             const selected = cy.$(':selected');
@@ -911,6 +912,175 @@ function supprimerZoneContour() {
     document.getElementById("zoneDeleteCancel").addEventListener("click", () => popup.remove());
 }
  
+// =====================================================================
+// AJOUTER UN OBJET / ENTITÉ AU GRAPHE
+// =====================================================================
+function ajouterObjet() {
+    if (document.getElementById("addObjectPopup")) return;
+
+    const popup = document.createElement("div");
+    popup.id = "addObjectPopup";
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(15,18,35,0.98); padding: 28px 24px;
+        border: 1px solid rgba(211,143,79,0.4);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7); z-index: 9999;
+        border-radius: 12px; width: 320px;
+        font-family: Montserrat, sans-serif; color: white;
+    `;
+
+    const shapes = [
+        { key: 'round-rectangle', label: '▭', title: 'Rectangle arrondi' },
+        { key: 'ellipse',         label: '⬭', title: 'Ovale' },
+        { key: 'rectangle',       label: '▬', title: 'Rectangle' },
+        { key: 'pentagon',        label: '⬠', title: 'Pentagone' },
+        { key: 'diamond',         label: '◆', title: 'Losange' },
+    ];
+
+    const presetColors = ["#bdc3c7","#58B19F","#f8c291","#82ccdd","#f6b93b","#F97F51","#a29bfe","#ff7675"];
+
+    popup.innerHTML = `
+        <h4 style="margin:0 0 18px; color:#d38f4f; font-family:Rajdhani,sans-serif; text-transform:uppercase; letter-spacing:0.06em; font-size:16px;">
+            ＋ Ajouter un objet / entité
+        </h4>
+
+        <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Nom :</label>
+        <input type="text" id="objName" placeholder="ex: Budget, Projet Alpha, Contrat…"
+            style="width:100%; padding:8px 10px; margin:5px 0 14px;
+            background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+            border-radius:6px; color:white; font-family:Montserrat,sans-serif;
+            font-size:13px; box-sizing:border-box;">
+
+        <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Type d'objet :</label>
+        <input type="text" id="objType" placeholder="ex: Ressource, Processus, Concept…"
+            style="width:100%; padding:8px 10px; margin:5px 0 14px;
+            background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+            border-radius:6px; color:white; font-family:Montserrat,sans-serif;
+            font-size:13px; box-sizing:border-box;">
+
+        <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Forme :</label>
+        <div id="objShapeRow" style="display:flex; gap:7px; margin:6px 0 14px; flex-wrap:wrap;">
+            ${shapes.map((s, i) => `
+                <button data-shape="${s.key}" title="${s.title}" style="
+                    flex:1; min-width:28px; padding:7px 4px;
+                    background: ${i === 0 ? 'rgba(211,143,79,0.25)' : 'rgba(255,255,255,0.06)'};
+                    border: 1px solid ${i === 0 ? 'rgba(211,143,79,0.7)' : 'rgba(255,255,255,0.1)'};
+                    border-radius:5px; color:white; cursor:pointer; font-size:15px;
+                    transition:all 0.15s ease;
+                ">${s.label}</button>
+            `).join('')}
+        </div>
+
+        <label style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(211,143,79,0.8); font-weight:700;">Couleur :</label>
+        <div style="display:flex; flex-wrap:wrap; gap:7px; margin:6px 0 18px; align-items:center;">
+            ${presetColors.map((c, i) => `
+                <div data-objcolor="${c}" style="
+                    width:26px; height:26px; border-radius:50%; background:${c};
+                    cursor:pointer;
+                    border: 3px solid ${i === 0 ? 'white' : 'transparent'};
+                    transition:border 0.15s;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.35);
+                " ${i === 0 ? 'data-selected="1"' : ''}></div>
+            `).join('')}
+            <input type="color" id="objColorPicker" value="${presetColors[0]}"
+                style="width:34px; height:28px; border:none; border-radius:6px; cursor:pointer; background:none; margin-left:4px;">
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button id="objConfirm" style="flex:1; padding:10px; background:linear-gradient(135deg,#d38f4f,#b8762f); color:white; border:none; border-radius:7px; cursor:pointer; font-family:Montserrat,sans-serif; font-weight:700; font-size:13px;">Ajouter</button>
+            <button id="objCancel"  style="flex:1; padding:10px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.12); border-radius:7px; cursor:pointer; font-family:Montserrat,sans-serif; font-weight:600; font-size:13px;">Annuler</button>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+    document.getElementById("objName").focus();
+
+    let selectedObjShape = 'round-rectangle';
+    let selectedObjColor = presetColors[0];
+
+    // Shape selection
+    popup.querySelectorAll("[data-shape]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            selectedObjShape = btn.dataset.shape;
+            popup.querySelectorAll("[data-shape]").forEach(b => {
+                const active = b.dataset.shape === selectedObjShape;
+                b.style.background  = active ? 'rgba(211,143,79,0.25)' : 'rgba(255,255,255,0.06)';
+                b.style.borderColor = active ? 'rgba(211,143,79,0.7)'  : 'rgba(255,255,255,0.1)';
+            });
+        });
+    });
+
+    // Color presets
+    popup.querySelectorAll("[data-objcolor]").forEach(dot => {
+        dot.addEventListener("click", () => {
+            selectedObjColor = dot.dataset.objcolor;
+            document.getElementById("objColorPicker").value = selectedObjColor;
+            popup.querySelectorAll("[data-objcolor]").forEach(d => {
+                d.style.border = "3px solid transparent";
+                d.dataset.selected = "0";
+            });
+            dot.style.border = "3px solid white";
+            dot.dataset.selected = "1";
+        });
+    });
+
+    document.getElementById("objColorPicker").addEventListener("input", e => {
+        selectedObjColor = e.target.value;
+        popup.querySelectorAll("[data-objcolor]").forEach(d => {
+            d.style.border = "3px solid transparent";
+            d.dataset.selected = "0";
+        });
+    });
+
+    document.getElementById("objCancel").addEventListener("click", () => popup.remove());
+
+    document.getElementById("objConfirm").addEventListener("click", () => {
+        const name = document.getElementById("objName").value.trim();
+        const type = document.getElementById("objType").value.trim();
+        if (!name) {
+            document.getElementById("objName").style.borderColor = "#e74c3c";
+            return;
+        }
+
+        const id = "obj_" + Date.now();
+        // Place the new node near the center of the viewport
+        const pan  = cy.pan();
+        const zoom = cy.zoom();
+        const cx = (cy.container().offsetWidth  / 2 - pan.x) / zoom;
+        const cy2 = (cy.container().offsetHeight / 2 - pan.y) / zoom;
+
+        const node = cy.add({
+            group: 'nodes',
+            data: {
+                id: id,
+                label: name,
+                nodeType: 'object',
+                objectCategory: type || 'Objet',
+                role_entreprise: type || '',
+                age: '',
+                secteur: '',
+                extraFields: []
+            },
+            position: {
+                x: cx + (Math.random() - 0.5) * 120,
+                y: cy2 + (Math.random() - 0.5) * 120
+            }
+        });
+
+        node.style({
+            'shape': selectedObjShape,
+            'background-color': selectedObjColor,
+            'border-color': 'rgba(0,0,0,0.3)',
+            'border-width': 2,
+            'color': '#222'
+        });
+
+        fitNodeToLabel(node, selectedObjShape);
+        popup.remove();
+    });
+}
+// =====================================================================
+
 document.getElementById("submitToProfBtn").onclick = () => {
     const userId = sessionStorage.getItem("userId");
     if (!userId) { alert("Vous devez être connecté."); return; }
@@ -945,8 +1115,17 @@ function openFicheActeur(node) {
     const secteur     = node.data('secteur')         || '';
     const extraFields = node.data('extraFields')     || [];
 
+    const isObject = node.data('nodeType') === 'object';
+    const avatarIcon = isObject ? '📦' : '👤';
+    const typeLabel  = isObject ? ('Objet · ' + (node.data('objectCategory') || 'Entité')) : 'Acteur';
+
     // Bulle initiale (informations fixes)
-    const fixedBubbles = [
+    const fixedBubbles = isObject ? [
+        { icon: '📦', key: 'label',           label: 'Nom',      value: label,  editable: false },
+        { icon: '🏷️', key: 'objectCategory',  label: 'Type',     value: node.data('objectCategory') || '', editable: true },
+        { icon: '📝', key: 'role_entreprise',  label: 'Rôle',     value: role,   editable: true  },
+        { icon: '🏢', key: 'secteur',          label: 'Secteur',  value: secteur, editable: true  },
+    ] : [
         { icon: '👤', key: 'label',            label: 'Nom',     value: label,   editable: false },
         { icon: '💼', key: 'role_entreprise',  label: 'Rôle',    value: role,    editable: true  },
         { icon: '🎂', key: 'age',              label: 'Âge',     value: age,     editable: true  },
@@ -1104,10 +1283,10 @@ function openFicheActeur(node) {
         <button class="fiche-btn-close" id="ficheClose">✕</button>
 
         <div class="fiche-header">
-            <div class="fiche-avatar">👤</div>
+            <div class="fiche-avatar">${avatarIcon}</div>
             <div>
                 <div class="fiche-name">${label}</div>
-                <div class="fiche-id">Acteur · ${node.id()}</div>
+                <div class="fiche-id">${typeLabel} · ${node.id()}</div>
             </div>
         </div>
 
