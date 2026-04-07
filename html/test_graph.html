@@ -46,7 +46,7 @@
  
           <strong>Supprimer une zone</strong>
           Cliquez sur un acteur, puis sur "Supprimer une zone sélectionnée". Vous pouvez choisir la zone à supprimer si l'acteur en a plusieurs.
-
+ 
           <strong>Pour plus de visibilité</strong>
           Déplacez les acteurs si des relations se chevauchent. De plus, vous pouvez faire un clic droit sur un acteur pour changer la forme, le style ou l'écriture.
  
@@ -58,11 +58,11 @@
       <button id="linkSimpleBtn" class="main-button">→ Flèche simple</button>
       <button id="linkDoubleBtn" class="main-button">↔ Flèche double sens</button>
       <button id="deleteSelectedBtn" class="main-button">Supprimer sélection</button>
-
+ 
       <hr>
       <h4>Objets &amp; Entités</h4>
       <button id="addObjectBtn" class="main-button">＋ Ajouter un objet / entité</button>
-
+ 
       <label>Couleur des acteurs selon leurs secteurs:</label>
       <div id="colorPanel"></div>
  
@@ -130,12 +130,33 @@
  
     if (emploiBubble && emploiTooltip) {
       emploiBubble.addEventListener('mouseenter', () => {
-        const rect = emploiBubble.getBoundingClientRect();
+        const rect    = emploiBubble.getBoundingClientRect();
+        const panelW  = document.querySelector('.panel').getBoundingClientRect().right;
         emploiTooltip.classList.add('fixed-mode');
-        emploiTooltip.style.top = rect.top + 'px';
-        emploiTooltip.style.left = (rect.right + 12) + 'px';
         emploiTooltip.style.visibility = 'visible';
-        emploiTooltip.style.opacity = '1';
+        emploiTooltip.style.opacity    = '1';
+ 
+        // Placer à droite du panel + petit gap
+        let left = panelW + 12;
+        let top  = rect.top;
+ 
+        emploiTooltip.style.left = left + 'px';
+        emploiTooltip.style.top  = top  + 'px';
+ 
+        const tipRect = emploiTooltip.getBoundingClientRect();
+ 
+        // Si ça dépasse à droite → rétrécir en restant dans l'écran
+        if (tipRect.right > window.innerWidth - 8) {
+          left = Math.max(panelW + 12, window.innerWidth - tipRect.width - 8);
+        }
+        // Si ça dépasse en bas → remonter
+        if (tipRect.bottom > window.innerHeight - 8) {
+          top = Math.max(8, window.innerHeight - tipRect.height - 8);
+        }
+        if (top < 8) top = 8;
+ 
+        emploiTooltip.style.left = left + 'px';
+        emploiTooltip.style.top  = top  + 'px';
       });
  
       emploiBubble.addEventListener('mouseleave', () => {

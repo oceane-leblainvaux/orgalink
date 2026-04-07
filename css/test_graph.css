@@ -460,11 +460,8 @@ footer {
     padding: 14px 16px;
     border: 1px solid rgba(211, 143, 79, 0.35);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 0;
-    transform: translateY(8px);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+    position: fixed;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
     z-index: 99999;
     text-align: left;
     pointer-events: none;
@@ -485,21 +482,12 @@ footer {
     margin-top: 0;
 }
  
-/* Flèche vers le bas */
-.emploi-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 20px;
-    border: 7px solid transparent;
-    border-top-color: rgba(211, 143, 79, 0.35);
-}
+
  
 .emploi-bubble:hover .emploi-tooltip {
     visibility: visible !important;
     opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
+    transition: opacity 0.25s ease, visibility 0s linear 0s;
 }
  
 /* ===== TITRE + BOUTON AIDE CÔTE À CÔTE ===== */
@@ -514,4 +502,15 @@ footer {
 .emploi-tooltip.fixed-mode {
     position: fixed;
     z-index: 99999;
+    border-radius: 10px;
+    bottom: unset;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Désactiver le hover CSS quand le JS gère l'affichage */
+.emploi-bubble:hover .emploi-tooltip.fixed-mode {
+    visibility: visible !important;
+    opacity: 1;
+    transform: none !important;
 }
