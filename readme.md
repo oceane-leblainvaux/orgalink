@@ -1,6 +1,6 @@
 Projet orgalink
 ===============
-# 🔗 Orgalink — Outil de modélisation et visualisation d'organisations sociales en entreprise
+# Orgalink — Outil de modélisation et visualisation d'organisations sociales en entreprise
 
 > Projet M1 — ISEN Brest | 2025/2026  
 > Réalisé par **Faustine Madec** & **Océane Le Blainvaux**  
